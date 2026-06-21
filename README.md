@@ -38,3 +38,5 @@ Database:
 - Mercedes C-Class 2024
 - Porsche 911 Carrera 2024
 - Toyota Camry Hybrid 2024
+
+Project uploaded to GitHub successfully.
