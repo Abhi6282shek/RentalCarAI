@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Create Account — RentalCar AI</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg-primary:#080c14;--bg-secondary:#0d1421;--bg-card:rgba(255,255,255,0.04);--border-glass:rgba(255,255,255,0.08);--accent:#c8a84b;--accent-dim:rgba(200,168,75,0.15);--accent-glow:rgba(200,168,75,0.3);--text-primary:#f0f0f0;--text-muted:#7a8499;--text-dim:#4a5568;--error:#e84545;--success:#22c55e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg-secondary);}::-webkit-scrollbar-thumb{background:var(--accent);}
+
+.auth-wrapper{flex:1;display:flex;min-height:100vh;}
+.auth-left{flex:1;background:var(--bg-secondary);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:4rem;}
+.auth-left::before{content:'';position:absolute;top:-150px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,168,75,0.07) 0%,transparent 70%);}
+.auth-right{width:520px;min-width:520px;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;padding:3rem 2.5rem;border-left:1px solid var(--border-glass);overflow-y:auto;}
+
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:3rem;position:relative;z-index:1;}
+.brand span{color:var(--accent);}
+.left-headline{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,2.8vw,2.6rem);font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:1rem;position:relative;z-index:1;}
+.left-headline em{font-style:normal;color:var(--accent);}
+.left-sub{color:var(--text-muted);font-size:.9rem;line-height:1.7;max-width:360px;position:relative;z-index:1;margin-bottom:2.5rem;}
+.benefit-item{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;position:relative;z-index:1;}
+.benefit-check{width:24px;height:24px;background:var(--accent-dim);border:1px solid rgba(200,168,75,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.65rem;}
+.benefit-text{font-size:.82rem;color:var(--text-muted);}
+
+/* PROGRESS STEPS */
+.steps-bar{
+    display:flex;
+    align-items:center;
+    margin-bottom:2rem;
+}
+
+.step-item{
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    flex:1;
+}
+
+.step-circle{
+    width:28px;
+    height:28px;
+    min-width:28px;
+    border-radius:50%;
+    border:2px solid var(--border-glass);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.step-line{
+    flex:1;
+    height:2px;
+    background:var(--border-glass);
+    margin:0 8px;
+}
+
+.step-line.done{
+    background:var(--accent);
+}
+
+/* FORM */
+.auth-form-container{width:100%;max-width:420px;}
+.auth-form-eyebrow{font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:.6rem;}
+.auth-form-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-1px;margin-bottom:.4rem;}
+.auth-form-sub{font-size:.82rem;color:var(--text-muted);margin-bottom:1.5rem;}
+.auth-form-sub a{color:var(--accent);text-decoration:none;font-weight:600;}
+
+.form-group{margin-bottom:1.1rem;position:relative;}
+.form-label-custom{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600;display:block;margin-bottom:.45rem;}
+.form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-glass);color:var(--text-primary);border-radius:10px;padding:.8rem 1rem .8rem 2.8rem;font-size:.88rem;font-family:'Inter',sans-serif;transition:all .3s;outline:none;}
+.form-input:focus{background:rgba(255,255,255,0.07);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.form-input::placeholder{color:var(--text-dim);}
+.form-input.valid{border-color:var(--success);}
+.form-input.invalid{border-color:var(--error);}
+.input-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem;pointer-events:none;margin-top:.9rem;}
+.input-check{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);font-size:.8rem;margin-top:.9rem;}
+.password-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-top:.9rem;background:none;border:none;padding:0;}
+.password-toggle:hover{color:var(--accent);}
+.field-error{font-size:.72rem;color:var(--error);margin-top:.3rem;display:none;}
+.field-error.show{display:block;}
+.field-hint{font-size:.72rem;color:var(--text-muted);margin-top:.3rem;}
+
+/* PASSWORD STRENGTH */
+.pwd-strength{margin-top:.5rem;}
+.pwd-strength-bars{display:flex;gap:4px;margin-bottom:.3rem;}
+.pwd-bar{height:3px;flex:1;border-radius:2px;background:var(--border-glass);transition:background .3s;}
+.pwd-bar.weak{background:var(--error);}
+.pwd-bar.medium{background:#f59e0b;}
+.pwd-bar.strong{background:var(--success);}
+.pwd-strength-label{font-size:.7rem;color:var(--text-muted);}
+.pwd-strength-label.weak{color:var(--error);}
+.pwd-strength-label.medium{color:#f59e0b;}
+.pwd-strength-label.strong{color:var(--success);}
+
+/* PASSWORD REQUIREMENTS */
+.pwd-requirements{background:rgba(255,255,255,0.03);border:1px solid var(--border-glass);border-radius:8px;padding:.8rem 1rem;margin-top:.5rem;}
+.req-item{font-size:.72rem;color:var(--text-muted);display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
+.req-item:last-child{margin-bottom:0;}
+.req-item i{width:12px;text-align:center;}
+.req-item.met{color:var(--success);}
+.req-item.met i{color:var(--success);}
+
+.terms-check{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:1.5rem;}
+.terms-check input[type=checkbox]{width:16px;height:16px;min-width:16px;margin-top:2px;accent-color:var(--accent);cursor:pointer;}
+.terms-check label{font-size:.78rem;color:var(--text-muted);cursor:pointer;line-height:1.5;}
+.terms-check label a{color:var(--accent);text-decoration:none;}
+
+.btn-submit{width:100%;background:var(--accent);color:#000;border:none;padding:.9rem;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .3s;position:relative;}
+.btn-submit:hover{background:#e0b84f;transform:translateY(-1px);box-shadow:0 10px 30px var(--accent-glow);}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-submit .spinner{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+.btn-submit.loading .btn-text{display:none;}
+.btn-submit.loading .spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.success-screen{text-align:center;padding:2rem 0;display:none;}
+.success-screen.show{display:block;}
+.register-form.hide{display:none;}
+.success-icon{width:80px;height:80px;background:rgba(34,197,94,0.1);border:2px solid var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2rem;color:var(--success);}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:2rem;right:2rem;z-index:9999;}
+.toast-msg{background:rgba(8,12,20,0.95);border:1px solid var(--border-glass);backdrop-filter:blur(20px);border-radius:10px;padding:1rem 1.4rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;animation:slide-in .3s ease;min-width:260px;}
+.toast-msg.success i{color:#22c55e;}
+.toast-msg.error-toast i{color:var(--error);}
+@keyframes slide-in{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+@media(max-width:960px){.auth-left{display:none;}.auth-right{width:100%;min-width:unset;border:none;padding:2rem 1.5rem;}}
+</style>
+</head>
+<body>
+<div class="auth-wrapper">
+  <!-- LEFT -->
+  <div class="auth-left">
+    <a href="index.html" class="brand" style="text-decoration:none;color:var(--text-primary);">Rental<span>Car</span> <span style="color:var(--text-muted);font-size:.75rem;vertical-align:middle;">AI</span></a>
+    <h2 class="left-headline">Join <em>50,000+</em><br/>smart drivers<br/>already onboard</h2>
+    <p class="left-sub">Create your free account in under 2 minutes and unlock AI-powered recommendations, instant bookings, and more.</p>
+    <div>
+      <div class="benefit-item"><div class="benefit-check"><i class="fas fa-check"></i></div><div class="benefit-text">AI car matching based on your profile</div></div>
+      <div class="benefit-item"><div class="benefit-check"><i class="fas fa-check"></i></div><div class="benefit-text">Instant booking confirmation</div></div>
+      <div class="benefit-item"><div class="benefit-check"><i class="fas fa-check"></i></div><div class="benefit-text">Full booking history & management</div></div>
+      <div class="benefit-item"><div class="benefit-check"><i class="fas fa-check"></i></div><div class="benefit-text">Exclusive member pricing on premium cars</div></div>
+      <div class="benefit-item"><div class="benefit-check"><i class="fas fa-check"></i></div><div class="benefit-text">Cancel anytime, no hidden fees</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="auth-right">
+    <div class="auth-form-container">
+      <!-- Steps -->
+      <div class="steps-bar" id="stepsBar">
+        <div class="step-item">
+          <div class="step-circle active" id="step1circle">1</div>
+          <div class="step-label">Account</div>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-item">
+          <div class="step-circle" id="step2circle">2</div>
+          <div class="step-label">Details</div>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-item">
+          <div class="step-circle" id="step3circle">3</div>
+          <div class="step-label">Done</div>
+        </div>
+      </div>
+
+      <div class="auth-form-eyebrow">Create Account</div>
+      <h1 class="auth-form-title">Get started</h1>
+      <p class="auth-form-sub">Already have an account? <a href="login.html">Sign in →</a></p>
+
+      <!-- STEP 1 -->
+      <div id="step1" class="register-form">
+        <div class="form-group">
+          <label class="form-label-custom">Full Name</label>
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" class="form-input" id="fullName" placeholder="Rahul Kumar"/>
+          <div class="field-error" id="nameError">Please enter your full name.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-custom">Email Address</label>
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" class="form-input" id="email" placeholder="you@example.com" oninput="validateEmail()"/>
+          <div class="field-error" id="emailError">Please enter a valid email address.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-custom">Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" class="form-input" id="password" placeholder="Create a strong password" oninput="checkStrength()" autocomplete="new-password"/>
+          <button type="button" class="password-toggle" onclick="togglePwd('password','eyeIcon1')"><i class="fas fa-eye" id="eyeIcon1"></i></button>
+          <div class="pwd-strength" id="pwdStrength" style="display:none;">
+            <div class="pwd-strength-bars">
+              <div class="pwd-bar" id="bar1"></div>
+              <div class="pwd-bar" id="bar2"></div>
+              <div class="pwd-bar" id="bar3"></div>
+              <div class="pwd-bar" id="bar4"></div>
+            </div>
+            <div class="pwd-strength-label" id="pwdLabel">Too short</div>
+          </div>
+          <div class="pwd-requirements" id="pwdReqs" style="display:none;">
+            <div class="req-item" id="reqLen"><i class="fas fa-times"></i>At least 8 characters</div>
+            <div class="req-item" id="reqUpper"><i class="fas fa-times"></i>One uppercase letter</div>
+            <div class="req-item" id="reqNum"><i class="fas fa-times"></i>One number</div>
+            <div class="req-item" id="reqSpecial"><i class="fas fa-times"></i>One special character</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-custom">Confirm Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" class="form-input" id="confirmPassword" placeholder="Repeat your password" oninput="checkConfirm()" autocomplete="new-password"/>
+          <button type="button" class="password-toggle" onclick="togglePwd('confirmPassword','eyeIcon2')"><i class="fas fa-eye" id="eyeIcon2"></i></button>
+          <div class="field-error" id="confirmError">Passwords do not match.</div>
+        </div>
+        <button type="button" class="btn-submit mb-3" onclick="goStep2()">
+          <span class="btn-text">Continue <i class="fas fa-arrow-right ms-2"></i></span>
+        </button>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step2" class="register-form hide">
+        <div class="form-group">
+          <label class="form-label-custom">Phone Number</label>
+          <i class="fas fa-phone input-icon"></i>
+          <input type="tel" class="form-input" id="phone" placeholder="+91 98765 43210"/>
+          <div class="field-error" id="phoneError">Please enter a valid phone number.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-custom">City</label>
+          <i class="fas fa-map-marker-alt input-icon"></i>
+          <select class="form-input" id="city" style="padding-left:2.8rem;">
+            <option value="" disabled selected>Select your city</option>
+            <option>Bengaluru</option><option>Mumbai</option><option>Delhi</option>
+            <option>Hyderabad</option><option>Chennai</option><option>Pune</option>
+            <option>Kolkata</option><option>Ahmedabad</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label-custom">Driving Licence Number</label>
+          <i class="fas fa-id-card input-icon"></i>
+          <input type="text" class="form-input" id="licence" placeholder="KA-01-20200012345 (optional)"/>
+          <div class="field-hint">You can add this later from your dashboard.</div>
+        </div>
+        <div class="terms-check">
+          <input type="checkbox" id="terms"/>
+          <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm I am 18+ and hold a valid driving licence.</label>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn-submit" style="flex:0 0 auto;width:auto;padding:.9rem 1.5rem;background:transparent;border:1px solid var(--border-glass);color:var(--text-primary);" onclick="goStep1()"><i class="fas fa-arrow-left"></i></button>
+          <button type="button" class="btn-submit" id="submitBtn" onclick="submitForm()" style="flex:1;">
+            <span class="btn-text"><i class="fas fa-user-plus me-2"></i>Create Account</span>
+            <div class="spinner"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:.5rem;">You're in!</h3>
+        <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:2rem;">Your account has been created. Welcome to RentalCar AI.</p>
+        <a href="dashboard.html" class="btn-submit" style="display:block;text-decoration:none;text-align:center;">Go to Dashboard <i class="fas fa-arrow-right ms-2"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+function togglePwd(id, iconId){
+  const i = document.getElementById(id), ic = document.getElementById(iconId);
+  i.type = i.type==='password'?'text':'password';
+  ic.className = i.type==='password'?'fas fa-eye':'fas fa-eye-slash';
+}
+
+function validateEmail(){
+  const v = document.getElementById('email').value;
+  const rx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const el = document.getElementById('email');
+  if(v && rx.test(v)){el.classList.add('valid');el.classList.remove('invalid');}
+  else if(v){el.classList.add('invalid');el.classList.remove('valid');}
+}
+
+function checkStrength(){
+  const p = document.getElementById('password').value;
+  document.getElementById('pwdStrength').style.display = p?'block':'none';
+  document.getElementById('pwdReqs').style.display = p?'block':'none';
+  const reqs = {
+    reqLen: p.length>=8,
+    reqUpper: /[A-Z]/.test(p),
+    reqNum: /[0-9]/.test(p),
+    reqSpecial: /[^A-Za-z0-9]/.test(p)
+  };
+  Object.entries(reqs).forEach(([id,met])=>{
+    const el = document.getElementById(id);
+    el.className = 'req-item'+(met?' met':'');
+    el.querySelector('i').className = met?'fas fa-check':'fas fa-times';
+  });
+  const score = Object.values(reqs).filter(Boolean).length;
+  const bars = ['bar1','bar2','bar3','bar4'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  const classes = ['','weak','medium','medium','strong'];
+  bars.forEach((b,i)=>{
+    const el = document.getElementById(b);
+    el.className = 'pwd-bar';
+    if(i < score) el.classList.add(classes[score]);
+  });
+  const label = document.getElementById('pwdLabel');
+  label.textContent = p.length<4?'Too short':labels[score]||'Weak';
+  label.className = 'pwd-strength-label '+(classes[score]||'');
+}
+
+function checkConfirm(){
+  const p = document.getElementById('password').value;
+  const c = document.getElementById('confirmPassword').value;
+  const el = document.getElementById('confirmPassword');
+  if(c && c===p){el.classList.add('valid');el.classList.remove('invalid');document.getElementById('confirmError').classList.remove('show');}
+  else if(c){el.classList.add('invalid');el.classList.remove('valid');}
+}
+
+function showToast(msg,type='success'){
+  const c=document.getElementById('toastContainer'),t=document.createElement('div');
+  t.className=`toast-msg ${type}`;
+  t.innerHTML=`<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i>${msg}`;
+  c.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+
+function goStep2(){
+  const name=document.getElementById('fullName').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const pwd=document.getElementById('password').value;
+  const cpwd=document.getElementById('confirmPassword').value;
+  let ok=true;
+  if(name.length<2){document.getElementById('nameError').classList.add('show');ok=false;}else{document.getElementById('nameError').classList.remove('show');}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){document.getElementById('emailError').classList.add('show');ok=false;}else{document.getElementById('emailError').classList.remove('show');}
+  if(pwd.length<6){showToast('Password must be at least 6 characters','error-toast');ok=false;}
+  if(pwd!==cpwd){document.getElementById('confirmError').classList.add('show');ok=false;}else{document.getElementById('confirmError').classList.remove('show');}
+  if(!ok)return;
+  document.getElementById('step1').classList.add('hide');
+  document.getElementById('step2').classList.remove('hide');
+  document.getElementById('step1circle').className='step-circle done';
+  document.getElementById('step1circle').innerHTML='<i class="fas fa-check" style="font-size:.6rem;"></i>';
+  document.getElementById('step2circle').className='step-circle active';
+  document.getElementById('line1').classList.add('done');
+}
+
+function goStep1(){
+  document.getElementById('step2').classList.add('hide');
+  document.getElementById('step1').classList.remove('hide');
+  document.getElementById('step2circle').className='step-circle';
+  document.getElementById('step2circle').textContent='2';
+  document.getElementById('step1circle').className='step-circle active';
+  document.getElementById('step1circle').textContent='1';
+  document.getElementById('line1').classList.remove('done');
+}
+
+async function submitForm(){
+
+  if(!document.getElementById('terms').checked){
+    showToast('Please agree to the Terms of Service','error-toast');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.classList.add('loading');
+
+  const user = {
+    name: document.getElementById('fullName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    password: document.getElementById('password').value,
+    city: document.getElementById('city').value
+  };
+
+  try {
+
+    const response = await fetch(
+      'http://localhost:8080/api/users/register',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(user)
+      }
+    );
+
+    if(!response.ok){
+      throw new Error('Registration failed');
+    }
+
+    const data = await response.json();
+
+    localStorage.setItem(
+      'rcai_user',
+      JSON.stringify(data)
+    );
+
+    btn.classList.remove('loading');
+
+    document.getElementById('step2').classList.add('hide');
+    document.getElementById('successScreen').classList.add('show');
+
+    showToast(
+      'Account created successfully!',
+      'success'
+    );
+
+  } catch(error){
+
+    btn.classList.remove('loading');
+
+    console.error(error);
+
+    showToast(
+      'Unable to connect to server',
+      'error-toast'
+    );
+  }
+}
+</script>
+</body>
+</html>

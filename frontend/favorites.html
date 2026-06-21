@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Favourites — RentalCar AI</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080c14;--bg2:#0d1421;--bg3:#111827;
+  --card:rgba(255,255,255,0.04);--glass:rgba(255,255,255,0.08);
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,0.15);--gold-glow:rgba(200,168,75,0.3);
+  --txt:#f0f0f0;--muted:#7a8499;--dim:#4a5568;
+  --green:#22c55e;--red:#e84545;--blue:#3b82f6;--orange:#f59e0b;
+  --radius:14px;--radius-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+/* SIDEBAR */
+.sidebar{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--glass);height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s;}
+.sb-brand{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--glass);}
+.sb-brand a{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--txt);text-decoration:none;}
+.sb-brand span{color:var(--gold);}
+.sb-user{padding:1.1rem 1.5rem;border-bottom:1px solid var(--glass);display:flex;align-items:center;gap:.75rem;}
+.sb-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-dim);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--gold);flex-shrink:0;cursor:pointer;}
+.sb-name{font-size:.83rem;font-weight:600;line-height:1.2;}
+.sb-role{font-size:.68rem;color:var(--muted);}
+.sb-nav{flex:1;padding:.8rem 0;overflow-y:auto;}
+.sb-section{font-size:.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--dim);padding:.4rem 1.5rem;font-weight:600;margin-top:.4rem;}
+.sb-link{display:flex;align-items:center;gap:.75rem;padding:.72rem 1.5rem;font-size:.82rem;color:var(--muted);text-decoration:none;transition:all .2s;border-left:3px solid transparent;}
+.sb-link:hover{color:var(--txt);background:rgba(255,255,255,.03);}
+.sb-link.active{color:var(--gold);background:var(--gold-dim);border-left-color:var(--gold);}
+.sb-link i{width:15px;text-align:center;font-size:.82rem;}
+.sb-bottom{padding:1rem 1.5rem;border-top:1px solid var(--glass);}
+.btn-logout{display:flex;align-items:center;gap:.65rem;color:var(--muted);font-size:.82rem;padding:.55rem .75rem;border-radius:8px;cursor:pointer;transition:all .2s;background:none;border:none;width:100%;font-family:'Inter',sans-serif;}
+.btn-logout:hover{color:var(--red);background:rgba(232,69,69,.07);}
+
+/* MAIN */
+.main{margin-left:240px;min-height:100vh;}
+.topbar{background:rgba(8,12,20,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.pg-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;}
+.tb-right{display:flex;align-items:center;gap:.9rem;}
+.icon-btn{width:34px;height:34px;background:var(--card);border:1px solid var(--glass);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:all .2s;font-size:.82rem;text-decoration:none;}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold);}
+.content{padding:2rem;}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:2rem;}
+.page-header h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.3rem;}
+.page-header p{font-size:.85rem;color:var(--muted);}
+
+/* STATS ROW */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.stat-box{background:var(--card);border:1px solid var(--glass);border-radius:var(--radius);padding:1.3rem 1.4rem;display:flex;align-items:center;gap:1rem;transition:all .2s;}
+.stat-box:hover{border-color:rgba(200,168,75,.18);transform:translateY(-2px);}
+.stat-ico{width:40px;height:40px;min-width:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.ico-red{background:rgba(232,69,69,.1);color:var(--red);}
+.ico-gold{background:var(--gold-dim);color:var(--gold);}
+.ico-green{background:rgba(34,197,94,.1);color:var(--green);}
+.ico-blue{background:rgba(59,130,246,.1);color:var(--blue);}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1;}
+.stat-lbl{font-size:.72rem;color:var(--muted);margin-top:.2rem;text-transform:uppercase;letter-spacing:.4px;}
+
+/* FILTER TABS + TOOLBAR */
+.filter-tabs{display:flex;align-items:center;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.ftab{background:var(--card);border:1px solid var(--glass);color:var(--muted);border-radius:8px;padding:.4rem 1.1rem;font-size:.8rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;}
+.ftab:hover{border-color:rgba(200,168,75,.25);color:var(--txt);}
+.ftab.active{background:var(--gold-dim);border-color:rgba(200,168,75,.35);color:var(--gold);}
+.ftab .cnt{background:rgba(255,255,255,.08);border-radius:10px;padding:.08rem .45rem;font-size:.68rem;}
+.ftab.active .cnt{background:rgba(200,168,75,.2);}
+.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:.6rem;}
+.fsearch-wrap{position:relative;}
+.fsearch{background:rgba(255,255,255,.04);border:1px solid var(--glass);color:var(--txt);border-radius:8px;padding:.4rem 1rem .4rem 2.4rem;font-size:.8rem;font-family:'Inter',sans-serif;outline:none;transition:all .3s;width:200px;}
+.fsearch:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.fsearch::placeholder{color:var(--dim);}
+.fsearch-icon{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.75rem;pointer-events:none;}
+.sort-sel{background:rgba(255,255,255,.04);border:1px solid var(--glass);color:var(--txt);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;font-family:'Inter',sans-serif;outline:none;cursor:pointer;}
+.sort-sel:focus{border-color:var(--gold);}
+.view-toggle{display:flex;background:var(--card);border:1px solid var(--glass);border-radius:8px;overflow:hidden;}
+.vbtn{background:transparent;border:none;color:var(--muted);padding:.4rem .7rem;cursor:pointer;transition:all .2s;font-size:.85rem;line-height:1;}
+.vbtn.active,.vbtn:hover{background:var(--gold-dim);color:var(--gold);}
+
+/* FAV CARD — GRID MODE */
+.fav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.fav-grid.two-col{grid-template-columns:repeat(2,1fr);}
+.fav-grid.list-mode{grid-template-columns:1fr;}
+
+.fav-card{background:var(--card);border:1px solid var(--glass);border-radius:var(--radius);overflow:hidden;transition:all .3s;position:relative;display:flex;flex-direction:column;}
+.fav-card:hover{border-color:rgba(200,168,75,.25);box-shadow:0 8px 30px rgba(0,0,0,.35);transform:translateY(-3px);}
+
+/* card image */
+.fc-img{position:relative;height:195px;overflow:hidden;background:var(--bg3);}
+.fc-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;display:block;}
+.fav-card:hover .fc-img img{transform:scale(1.06);}
+.fc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55) 100%);pointer-events:none;}
+
+/* badges */
+.fc-fuel{position:absolute;top:.75rem;left:.75rem;background:rgba(8,12,20,.8);backdrop-filter:blur(6px);border:1px solid var(--gold-glow);color:var(--gold);font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:20px;display:flex;align-items:center;gap:.3rem;letter-spacing:.04em;z-index:2;}
+.fc-remove{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;background:rgba(8,12,20,.78);backdrop-filter:blur(6px);border:1px solid rgba(232,69,69,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:.82rem;cursor:pointer;z-index:2;transition:all .2s;}
+.fc-remove:hover{background:rgba(232,69,69,.18);transform:scale(1.1);}
+.fc-avail{position:absolute;bottom:.75rem;left:.75rem;font-size:.63rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;z-index:2;}
+.avail-yes{background:rgba(34,197,94,.18);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.avail-few{background:rgba(245,158,11,.15);color:var(--orange);border:1px solid rgba(245,158,11,.3);}
+.fc-date-added{position:absolute;bottom:.75rem;right:.75rem;font-size:.62rem;color:rgba(255,255,255,.5);z-index:2;background:rgba(8,12,20,.5);padding:.15rem .5rem;border-radius:4px;}
+
+/* card body */
+.fc-body{padding:1.1rem 1.2rem 1.2rem;display:flex;flex-direction:column;flex:1;}
+.fc-brand{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.15rem;}
+.fc-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--txt);line-height:1.2;margin-bottom:.4rem;}
+.fc-rating{display:flex;align-items:center;gap:.35rem;margin-bottom:.8rem;}
+.fc-stars{color:var(--gold);font-size:.8rem;}
+.fc-rcount{font-size:.68rem;color:var(--muted);}
+.fc-specs{display:flex;gap:.4rem;margin-bottom:.95rem;}
+.spec-pill{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--glass);border-radius:8px;padding:.4rem .5rem;flex:1;gap:.12rem;}
+.spec-pill i{color:var(--gold);font-size:.72rem;}
+.spec-pill strong{font-size:.72rem;color:var(--txt);font-weight:600;line-height:1;}
+.spec-pill span{font-size:.6rem;color:var(--muted);line-height:1;}
+.fc-footer{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:auto;padding-top:.9rem;border-top:1px solid var(--glass);}
+.fc-price{}
+.fc-old{font-size:.68rem;color:var(--dim);text-decoration:line-through;line-height:1;}
+.fc-num{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--txt);line-height:1.1;}
+.fc-num small{font-size:.7rem;font-weight:400;color:var(--muted);}
+.fc-btns{display:flex;gap:.4rem;}
+.btn-book{background:var(--gold);color:#000;border:none;border-radius:8px;font-size:.76rem;font-weight:700;padding:.42rem 1rem;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap;font-family:'Inter',sans-serif;cursor:pointer;}
+.btn-book:hover{background:#e0b84f;color:#000;transform:translateY(-1px);}
+.btn-view{background:transparent;border:1px solid var(--glass);color:var(--txt);border-radius:8px;font-size:.76rem;font-weight:500;padding:.42rem .85rem;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap;font-family:'Inter',sans-serif;cursor:pointer;}
+.btn-view:hover{border-color:var(--gold-glow);color:var(--gold);}
+
+/* LIST MODE */
+.fav-grid.list-mode .fav-card{flex-direction:row;}
+.fav-grid.list-mode .fc-img{width:210px;min-width:210px;height:auto;}
+.fav-grid.list-mode .fc-body{padding:1.2rem 1.4rem;}
+.fav-grid.list-mode .fc-specs{flex-wrap:wrap;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:5rem 2rem;color:var(--muted);}
+.empty-icon{font-size:4rem;margin-bottom:1.2rem;opacity:.2;display:block;}
+.empty-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:.5rem;color:var(--txt);}
+.empty-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.btn-browse{background:var(--gold);color:#000;border:none;padding:.75rem 2rem;border-radius:10px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;font-family:'Syne',sans-serif;}
+.btn-browse:hover{background:#e0b84f;color:#000;transform:translateY(-2px);}
+
+/* CONFIRM REMOVE MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:900;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--glass);border-radius:20px;padding:2rem;max-width:380px;width:90%;animation:pop .3s ease;}
+@keyframes pop{from{transform:scale(.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+.m-icon{width:56px;height:56px;background:rgba(232,69,69,.12);border:2px solid rgba(232,69,69,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--red);margin:0 auto 1rem;}
+.m-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;text-align:center;margin-bottom:.35rem;}
+.m-sub{font-size:.82rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:1.4rem;}
+.m-btn-row{display:flex;gap:.6rem;}
+.btn-m-cancel{flex:1;background:transparent;border:1px solid var(--glass);color:var(--txt);padding:.78rem;border-radius:10px;font-size:.85rem;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.btn-m-cancel:hover{border-color:var(--gold);color:var(--gold);}
+.btn-m-remove{flex:1;background:rgba(232,69,69,.15);border:1px solid rgba(232,69,69,.3);color:var(--red);padding:.78rem;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.btn-m-remove:hover{background:rgba(232,69,69,.25);}
+
+/* TOAST */
+.tc{position:fixed;bottom:2rem;right:2rem;z-index:9999;}
+.tm{background:rgba(8,12,20,.95);border:1px solid var(--glass);backdrop-filter:blur(20px);border-radius:10px;padding:.85rem 1.2rem;font-size:.83rem;display:flex;align-items:center;gap:.6rem;animation:si .3s ease;min-width:220px;margin-bottom:.4rem;}
+@keyframes si{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* RESULT INFO */
+.result-info{font-size:.8rem;color:var(--muted);margin-bottom:1rem;}
+.result-info strong{color:var(--txt);}
+
+/* CLEAR ALL BTN */
+.btn-clear-all{background:transparent;border:1px solid rgba(232,69,69,.25);color:var(--red);border-radius:8px;font-size:.78rem;font-weight:600;padding:.38rem .9rem;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:.4rem;}
+.btn-clear-all:hover{background:rgba(232,69,69,.08);}
+
+@media(max-width:1200px){.fav-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:992px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .topbar{padding:1rem;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+  .fav-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .content{padding:1rem;}
+  .fav-grid,.fav-grid.two-col{grid-template-columns:1fr;}
+  .fav-grid.list-mode .fav-card{flex-direction:column;}
+  .fav-grid.list-mode .fc-img{width:100%;height:180px;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+  .filter-tabs{gap:.25rem;}
+  .toolbar-right{margin-left:0;width:100%;}
+  .fsearch{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-brand"><a href="index.html">Rental<span>Car</span> <span style="color:var(--muted);font-size:.68rem;vertical-align:middle;">AI</span></a></div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">R</div>
+    <div><div class="sb-name" id="sbName">Loading…</div><div class="sb-role">Member</div></div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a class="sb-link" href="dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a>
+    <a class="sb-link" href="cars.html"><i class="fas fa-car"></i>Browse Cars</a>
+    <a class="sb-link" href="my-bookings.html"><i class="fas fa-calendar-alt"></i>My Bookings</a>
+    <a class="sb-link active" href="favorites.html"><i class="fas fa-heart"></i>Favourites</a>
+    <div class="sb-section">Tools</div>
+    <a class="sb-link" href="ai-recommendation.html"><i class="fas fa-robot"></i>AI Recommender</a>
+    <a class="sb-link" href="#"><i class="fas fa-bell"></i>Notifications</a>
+    <div class="sb-section">Support</div>
+    <a class="sb-link" href="about.html"><i class="fas fa-info-circle"></i>About Us</a>
+    <a class="sb-link" href="contact.html"><i class="fas fa-envelope"></i>Contact Us</a>
+    <div class="sb-section">Account</div>
+    <a class="sb-link" href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+    <a class="sb-link" href="#"><i class="fas fa-cog"></i>Settings</a>
+  </div>
+  <div class="sb-bottom">
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="icon-btn d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+      <div class="pg-title">Favourites</div>
+    </div>
+    <div class="tb-right">
+      <a href="cars.html" class="icon-btn" title="Browse Cars"><i class="fas fa-car"></i></a>
+      <div class="sb-avatar" id="topAvatar" style="cursor:pointer;">R</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h2>My <span style="color:var(--gold)">Favourites</span></h2>
+      <p>Cars you've saved — book them anytime before someone else does.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-ico ico-red"><i class="fas fa-heart"></i></div>
+        <div><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Saved Cars</div></div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-ico ico-green"><i class="fas fa-check-circle"></i></div>
+        <div><div class="stat-val" id="statAvail">0</div><div class="stat-lbl">Available Now</div></div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-ico ico-gold"><i class="fas fa-tag"></i></div>
+        <div><div class="stat-val" id="statAvgPrice">$0</div><div class="stat-lbl">Avg Price/day</div></div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-ico ico-blue"><i class="fas fa-star"></i></div>
+        <div><div class="stat-val" id="statTopRated">0</div><div class="stat-lbl">Top Rated (4.8+)</div></div>
+      </div>
+    </div>
+
+    <!-- FILTER TABS + TOOLBAR -->
+    <div class="filter-tabs">
+      <button class="ftab active" onclick="setFilter('all',this)"><i class="fas fa-border-all"></i>All <span class="cnt" id="cntAll">0</span></button>
+      <button class="ftab" onclick="setFilter('sedan',this)"><i class="fas fa-car-side"></i>Sedan <span class="cnt" id="cntSedan">0</span></button>
+      <button class="ftab" onclick="setFilter('suv',this)"><i class="fas fa-truck"></i>SUV <span class="cnt" id="cntSuv">0</span></button>
+      <button class="ftab" onclick="setFilter('electric',this)"><i class="fas fa-bolt"></i>Electric <span class="cnt" id="cntElectric">0</span></button>
+      <button class="ftab" onclick="setFilter('sports',this)"><i class="fas fa-tachometer-alt"></i>Sports <span class="cnt" id="cntSports">0</span></button>
+      <div class="toolbar-right">
+        <div class="fsearch-wrap">
+          <i class="fas fa-search fsearch-icon"></i>
+          <input type="text" class="fsearch" id="favSearch" placeholder="Search favourites…" oninput="renderFavs()">
+        </div>
+        <select class="sort-sel" id="sortSel" onchange="renderFavs()">
+          <option value="date">Recently Added</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+        <div class="view-toggle">
+          <button class="vbtn active" id="gridVBtn" onclick="setView('grid')" title="Grid"><i class="fas fa-th-large"></i></button>
+          <button class="vbtn" id="listVBtn" onclick="setView('list')" title="List"><i class="fas fa-list"></i></button>
+        </div>
+        <button class="btn-clear-all" id="clearAllBtn" onclick="confirmClearAll()" style="display:none">
+          <i class="fas fa-trash-alt"></i> Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULT INFO -->
+    <div class="result-info">Showing <strong id="resultCount">0</strong> saved cars</div>
+
+    <!-- FAV GRID -->
+    <div class="fav-grid" id="favGrid"></div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <i class="fas fa-heart empty-icon"></i>
+      <div class="empty-title">No favourites yet</div>
+      <div class="empty-sub">Browse our fleet and tap the <i class="fas fa-heart" style="color:var(--red)"></i> on any car<br>to save it here for quick access.</div>
+      <a href="cars.html" class="btn-browse"><i class="fas fa-car me-2"></i>Browse Cars</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- REMOVE CONFIRM MODAL -->
+<div class="modal-overlay" id="removeModal">
+  <div class="modal-box">
+    <div class="m-icon"><i class="fas fa-heart-broken"></i></div>
+    <div class="m-title">Remove from Favourites?</div>
+    <div class="m-sub" id="removeModalSub">This car will be removed from your favourites list.</div>
+    <div class="m-btn-row">
+      <button class="btn-m-cancel" onclick="closeRemoveModal()">Keep It</button>
+      <button class="btn-m-remove" onclick="confirmRemove()"><i class="fas fa-trash-alt me-1"></i>Remove</button>
+    </div>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="components.js"></script>
+<script src="main.js"></script>
+<script>
+// ── DEFAULT CARS DATA (same as cars.html) ─────────────────────────────
+const ALL_CARS = [
+  {id:1, brand:'BMW',          name:'3 Series 2024',    type:'sedan',  fuel:'Petrol',   price:89,  oldPrice:120, seats:5, trans:'Auto',  rating:4.9, reviews:128, avail:'yes', img:'images/cars/bmw-1.png'},
+  {id:6, brand:'Tesla',        name:'Model 3 2024',     type:'sedan',  fuel:'Electric', price:105, oldPrice:130, seats:5, trans:'Auto',  rating:4.9, reviews:214, avail:'yes', img:'images/cars/Tesla-1.png'},
+  {id:3, brand:'Mercedes-Benz',name:'C-Class 2024',     type:'sedan',  fuel:'Petrol',   price:119, oldPrice:155, seats:5, trans:'9G-Auto',rating:4.9,reviews:203, avail:'few', img:'images/cars/Mercedes C-Class-1.png'},
+  {id:4, brand:'Porsche',      name:'911 Carrera 2024', type:'sports', fuel:'Petrol',   price:219, oldPrice:280, seats:4, trans:'PDK',   rating:4.9, reviews:89,  avail:'yes', img:'images/cars/Porsche 911-1.png'},
+  {id:2, brand:'Audi',         name:'Q7 Premium 2024',  type:'suv',    fuel:'Diesel',   price:139, oldPrice:165, seats:7, trans:'Auto',  rating:4.9, reviews:156, avail:'yes', img:'images/cars/Audi Q7 2024-1.png'},
+  {id:5, brand:'Toyota',       name:'Camry Hybrid 2024',type:'sedan',  fuel:'Electric', price:59,  oldPrice:75,  seats:5, trans:'CVT',   rating:4.4, reviews:312, avail:'few', img:'images/cars/Toyota Camry Hybrid-1.png'},
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let allFavs   = [];   // array of car objects saved as favourites
+let activeFilter = 'all';
+let removeTarget = null;
+
+// ── INIT ───────────────────────────────────────────────────────────────
+function logout(){if(confirm('Sign out?')){localStorage.clear();window.location.href='login.html';}}
+
+function loadUser(){
+  const u = JSON.parse(localStorage.getItem('rcai_user')||'{"name":"Driver"}');
+  const init = (u.name||'D')[0].toUpperCase();
+  if(document.getElementById('sbName')) document.getElementById('sbName').textContent = u.name||'Driver';
+  ['sbAvatar','topAvatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=init;});
+}
+
+function toast(msg, col='#22c55e'){
+  const c=document.getElementById('tc'), t=document.createElement('div');
+  t.className='tm';
+  t.innerHTML=`<i class="fas fa-check-circle" style="color:${col};"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+// ── LOAD FAVOURITES FROM localStorage ─────────────────────────────────
+function loadFavs(){
+  const stored = JSON.parse(localStorage.getItem('favorites')||'[]');
+  // stored is array of car IDs e.g. [1,3,5]
+  // map IDs back to full car objects, add dateAdded if missing
+  allFavs = stored.map(entry => {
+    const id = Number(typeof entry === 'object'? entry.id: entry);
+    const date = typeof entry === 'object' ? entry.dateAdded : new Date().toISOString();
+    const car  = ALL_CARS.find(c => c.id === id);
+    return car ? {...car, dateAdded: date} : null;
+  }).filter(Boolean);
+  console.log("Loaded Favourites =", allFavs);
+  updateStats();
+  updateCounts();
+  renderFavs();
+}
+
+function saveFavs(){
+  const toStore = allFavs.map(c=>({id:c.id, dateAdded:c.dateAdded}));
+  localStorage.setItem('favorites', JSON.stringify(toStore));
+}
+
+// ── STATS ──────────────────────────────────────────────────────────────
+function updateStats(){
+  const total    = allFavs.length;
+  const avail    = allFavs.filter(c=>c.avail==='yes').length;
+  const avgPrice = total ? Math.round(allFavs.reduce((s,c)=>s+c.price,0)/total) : 0;
+  const topRated = allFavs.filter(c=>c.rating>=4.8).length;
+  document.getElementById('statTotal').textContent    = total;
+  document.getElementById('statAvail').textContent    = avail;
+  document.getElementById('statAvgPrice').textContent = '₹'+avgPrice;
+  document.getElementById('statTopRated').textContent = topRated;
+  document.getElementById('clearAllBtn').style.display = total > 0 ? 'flex' : 'none';
+}
+
+// ── TAB COUNTS ─────────────────────────────────────────────────────────
+function updateCounts(){
+  document.getElementById('cntAll').textContent     = allFavs.length;
+  document.getElementById('cntSedan').textContent   = allFavs.filter(c=>c.type==='sedan').length;
+  document.getElementById('cntSuv').textContent     = allFavs.filter(c=>c.type==='suv').length;
+  document.getElementById('cntElectric').textContent= allFavs.filter(c=>c.fuel==='Electric').length;
+  document.getElementById('cntSports').textContent  = allFavs.filter(c=>c.type==='sports').length;
+}
+
+// ── FILTER & SORT ──────────────────────────────────────────────────────
+function setFilter(f, btn){
+  activeFilter = f;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFavs();
+}
+
+function getFiltered(){
+  const q     = (document.getElementById('favSearch').value||'').toLowerCase();
+  const sort  = document.getElementById('sortSel').value;
+
+  let list = allFavs.filter(c=>{
+    const matchFilter =
+      activeFilter === 'all'     ? true :
+      activeFilter === 'electric'? c.fuel === 'Electric' :
+      c.type === activeFilter;
+    const matchSearch = !q || c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  if(sort==='price-asc')  list = [...list].sort((a,b)=>a.price-b.price);
+  if(sort==='price-desc') list = [...list].sort((a,b)=>b.price-a.price);
+  if(sort==='rating')     list = [...list].sort((a,b)=>b.rating-a.rating);
+  if(sort==='date')       list = [...list].sort((a,b)=>new Date(b.dateAdded)-new Date(a.dateAdded));
+
+  return list;
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function renderFavs(){
+  const list  = getFiltered();
+  const grid  = document.getElementById('favGrid');
+  const empty = document.getElementById('emptyState');
+
+  document.getElementById('resultCount').textContent = list.length;
+
+  if(list.length === 0){
+    grid.innerHTML  = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = list.map(c => cardHTML(c)).join('');
+}
+
+function cardHTML(c){
+  const saveP    = Math.round((1-c.price/c.oldPrice)*100);
+  const availEl  = c.avail === 'yes'
+    ? `<div class="fc-avail avail-yes">Available</div>`
+    : `<div class="fc-avail avail-few">Limited</div>`;
+  const fuelIcon = c.fuel==='Electric'?'bolt':c.fuel==='Hybrid'?'leaf':'gas-pump';
+  const dateStr  = new Date(c.dateAdded).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  const starsHTML= '★'.repeat(Math.floor(c.rating)) + (c.rating%1>=0.5?'½':'');
+
+  return `
+  <div class="fav-card" id="fc-${c.id}">
+    <div class="fc-img">
+      <img src="${c.img}" alt="${c.brand} ${c.name}" loading="lazy"
+           onerror="this.onerror=null;this.src='https://placehold.co/600x380/0d1421/c8a84b?text=${encodeURIComponent(c.brand)}'">
+      <div class="fc-fuel"><i class="fas fa-${fuelIcon}"></i>${c.fuel}</div>
+      <button class="fc-remove" onclick="openRemoveModal(${c.id},'${c.brand} ${c.name}')" title="Remove from favourites">
+        <i class="fas fa-heart-broken"></i>
+      </button>
+      ${availEl}
+      <div class="fc-date-added">Saved ${dateStr}</div>
+    </div>
+    <div class="fc-body">
+      <div class="fc-brand">${c.brand}</div>
+      <div class="fc-name">${c.name}</div>
+      <div class="fc-rating">
+        <span class="fc-stars">${'★'.repeat(Math.floor(c.rating))}</span>
+        <span class="fc-rcount">${c.rating} (${c.reviews} reviews)</span>
+      </div>
+      <div class="fc-specs">
+        <div class="spec-pill"><i class="fas fa-users"></i><strong>${c.seats}</strong><span>Seats</span></div>
+        <div class="spec-pill"><i class="fas fa-cog"></i><strong>${c.trans}</strong><span>Trans</span></div>
+        <div class="spec-pill"><i class="fas fa-tag"></i><strong>${saveP}%</strong><span>Off</span></div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-price">
+          <div class="fc-old">₹${c.oldPrice}/day</div>
+          <div class="fc-num">₹${c.price}/day<small>/day</small></div>
+        </div>
+        <div class="fc-btns">
+          <button class="btn-view" onclick="location.href='car-details.html?id=${c.id}'">
+            <i class="fas fa-eye"></i> View
+          </button>
+          <button class="btn-book" onclick="location.href='car-details.html?id=${c.id}'">
+            <i class="fas fa-calendar-check"></i> Book
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── VIEW TOGGLE ────────────────────────────────────────────────────────
+function setView(v){
+  const g = document.getElementById('favGrid');
+  if(v==='list'){
+    g.classList.add('list-mode');
+    document.getElementById('listVBtn').classList.add('active');
+    document.getElementById('gridVBtn').classList.remove('active');
+  } else {
+    g.classList.remove('list-mode');
+    document.getElementById('gridVBtn').classList.add('active');
+    document.getElementById('listVBtn').classList.remove('active');
+  }
+}
+
+// ── REMOVE SINGLE ──────────────────────────────────────────────────────
+function openRemoveModal(id, name){
+  removeTarget = id;
+  document.getElementById('removeModalSub').textContent =
+    `"${name}" will be removed from your favourites.`;
+  document.getElementById('removeModal').classList.add('show');
+}
+function closeRemoveModal(){
+  document.getElementById('removeModal').classList.remove('show');
+  removeTarget = null;
+}
+function confirmRemove(){
+  if(!removeTarget) return;
+  allFavs = allFavs.filter(c => c.id !== removeTarget);
+  saveFavs();
+  updateStats();
+  updateCounts();
+  renderFavs();
+  closeRemoveModal();
+  toast('Removed from favourites', '#e84545');
+}
+
+// ── CLEAR ALL ──────────────────────────────────────────────────────────
+function confirmClearAll(){
+  if(!confirm('Remove ALL favourites? This cannot be undone.')) return;
+  allFavs = [];
+  saveFavs();
+  updateStats();
+  updateCounts();
+  renderFavs();
+  toast('All favourites cleared', '#f59e0b');
+}
+
+// ── ALSO UPDATE cars.html heart state from here ────────────────────────
+// When user comes from cars.html having clicked ♥, their id is in localStorage
+// This page reads & writes rcai_favourites so both pages stay in sync.
+
+loadUser();
+loadFavs();
+</script>
+</body>
+</html>

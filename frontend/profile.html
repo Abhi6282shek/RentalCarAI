@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Profile — RentalCar AI</title>
+
+<!-- Icon font for UI icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts: Syne for headings, Inter for body text -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* ======================================================
+   ROOT VARIABLES — RentalCar AI design system
+   ====================================================== */
+:root{
+  --bg:#080c14;            /* page background */
+  --bg2:#0d1421;           /* panel background */
+  --glass:rgba(255,255,255,0.08);   /* glass border */
+  --card:rgba(255,255,255,0.04);    /* glass card fill */
+  --gold:#c8a84b;          /* primary accent */
+  --gold-dim:rgba(200,168,75,0.15);
+  --gold-glow:rgba(200,168,75,0.3);
+  --txt:#f0f0f0;
+  --muted:#7a8499;
+  --dim:#4a5568;
+  --red:#e84545;
+  --green:#22c55e;
+  --radius:18px;
+  --radius-sm:10px;
+}
+
+/* ======================================================
+   GLOBAL RESET
+   ====================================================== */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  /* subtle radial glow background for depth */
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(200,168,75,0.08), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(59,130,246,0.06), transparent 40%);
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+
+/* ======================================================
+   TOP NAVBAR
+   ====================================================== */
+.navbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1.1rem 2rem;
+  background:rgba(8,12,20,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--glass);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.navbar .brand{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.25rem;
+  text-decoration:none;
+  color:var(--txt);
+}
+.navbar .brand span{color:var(--gold);}
+.nav-back{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  font-size:.85rem;
+  color:var(--muted);
+  text-decoration:none;
+  border:1px solid var(--glass);
+  background:var(--card);
+  padding:.5rem 1rem;
+  border-radius:var(--radius-sm);
+  transition:all .2s;
+}
+.nav-back:hover{border-color:var(--gold-glow);color:var(--gold);}
+
+/* ======================================================
+   PAGE LAYOUT WRAPPER
+   ====================================================== */
+.page-wrap{
+  max-width:760px;
+  margin:0 auto;
+  padding:2.5rem 1.5rem 4rem;
+}
+.page-title{
+  font-family:'Syne',sans-serif;
+  font-size:1.7rem;
+  font-weight:800;
+  margin-bottom:.3rem;
+}
+.page-title span{color:var(--gold);}
+.page-sub{
+  font-size:.88rem;
+  color:var(--muted);
+  margin-bottom:2rem;
+}
+
+/* ======================================================
+   GLASSMORPHISM PROFILE CARD
+   ====================================================== */
+.profile-card{
+  background:var(--card);
+  border:1px solid var(--glass);
+  border-radius:var(--radius);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  padding:2.4rem 2rem;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+  transition:border-color .3s, transform .3s;
+}
+.profile-card:hover{
+  border-color:rgba(200,168,75,.25);
+}
+/* decorative glow blob inside the card */
+.profile-card::before{
+  content:'';
+  position:absolute;
+  top:-80px;
+  right:-80px;
+  width:240px;
+  height:240px;
+  background:radial-gradient(circle, var(--gold-dim), transparent 70%);
+  pointer-events:none;
+}
+
+/* --- Avatar + basic info header --- */
+.profile-header{
+  display:flex;
+  align-items:center;
+  gap:1.6rem;
+  margin-bottom:2rem;
+  flex-wrap:wrap;
+}
+.avatar-wrap{
+  position:relative;
+  flex-shrink:0;
+}
+/* Profile picture circle — shows initials if no image set */
+.avatar-circle{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--gold-dim), rgba(200,168,75,.05));
+  border:3px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:2.4rem;
+  color:var(--gold);
+  overflow:hidden;
+}
+.avatar-circle img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+/* small camera badge on avatar (visual only, no upload wired up) */
+.avatar-badge{
+  position:absolute;
+  bottom:-2px;
+  right:-2px;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:var(--gold);
+  border:3px solid var(--bg2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#000;
+  font-size:.75rem;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.avatar-badge:hover{transform:scale(1.1);}
+
+.profile-header-info{flex:1;min-width:200px;}
+.profile-name{
+  font-family:'Syne',sans-serif;
+  font-size:1.5rem;
+  font-weight:800;
+  margin-bottom:.2rem;
+  word-break:break-word;
+}
+.profile-email{
+  font-size:.85rem;
+  color:var(--muted);
+  margin-bottom:.7rem;
+  word-break:break-word;
+}
+.profile-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  background:rgba(34,197,94,.12);
+  border:1px solid rgba(34,197,94,.25);
+  color:var(--green);
+  font-size:.68rem;
+  font-weight:700;
+  padding:.25rem .7rem;
+  border-radius:20px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+
+/* --- Detail rows: Email / Phone / City --- */
+.detail-list{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  margin-bottom:2rem;
+}
+.detail-row{
+  display:flex;
+  align-items:center;
+  gap:.9rem;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--glass);
+  border-radius:var(--radius-sm);
+  padding:.85rem 1.1rem;
+  transition:border-color .2s, background .2s;
+}
+.detail-row:hover{
+  border-color:rgba(200,168,75,.2);
+  background:rgba(255,255,255,.045);
+}
+.detail-icon{
+  width:40px;
+  height:40px;
+  min-width:40px;
+  border-radius:10px;
+  background:var(--gold-dim);
+  color:var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+}
+.detail-text{min-width:0;flex:1;}
+.detail-label{
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--muted);
+  margin-bottom:.15rem;
+}
+.detail-value{
+  font-size:.92rem;
+  font-weight:600;
+  color:var(--txt);
+  word-break:break-word;
+}
+
+/* --- Action buttons row --- */
+.profile-actions{
+  display:flex;
+  gap:.8rem;
+  flex-wrap:wrap;
+}
+.btn{
+  flex:1;
+  min-width:140px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+  padding:.75rem 1.3rem;
+  border-radius:var(--radius-sm);
+  font-size:.88rem;
+  font-weight:700;
+  font-family:'Inter',sans-serif;
+  border:none;
+  cursor:pointer;
+  transition:all .2s ease;
+  text-decoration:none;
+}
+/* Primary button — Edit Profile */
+.btn-edit{
+  background:var(--gold);
+  color:#000;
+}
+.btn-edit:hover{
+  background:#e0b84f;
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(200,168,75,.3);
+}
+/* Secondary/danger button — Logout */
+.btn-logout{
+  background:rgba(232,69,69,.12);
+  border:1px solid rgba(232,69,69,.3);
+  color:var(--red);
+}
+.btn-logout:hover{
+  background:rgba(232,69,69,.22);
+  transform:translateY(-2px);
+}
+
+/* ======================================================
+   EDIT MODE — inline editable fields (toggled by JS)
+   ====================================================== */
+.editing-mode .detail-value{ display:none; }
+.editing-mode .detail-input{ display:block; }
+.detail-input{
+  display:none;
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--glass);
+  color:var(--txt);
+  border-radius:8px;
+  padding:.45rem .7rem;
+  font-size:.88rem;
+  font-family:'Inter',sans-serif;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.detail-input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px var(--gold-dim);
+}
+.editing-mode .btn-edit .btn-label{ display:none; }
+.editing-mode .btn-edit .btn-label-save{ display:inline; }
+.btn-edit .btn-label-save{ display:none; }
+
+/* ======================================================
+   TOAST NOTIFICATION
+   ====================================================== */
+.toast-container{
+  position:fixed;
+  bottom:1.5rem;
+  right:1.5rem;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+}
+.toast{
+  background:rgba(8,12,20,.95);
+  border:1px solid var(--glass);
+  backdrop-filter:blur(20px);
+  border-radius:10px;
+  padding:.8rem 1.2rem;
+  font-size:.83rem;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  min-width:220px;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn{
+  from{transform:translateX(110%);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+
+/* ======================================================
+   RESPONSIVE — MOBILE STYLES
+   ====================================================== */
+@media (max-width:600px){
+  .navbar{padding:1rem;}
+  .page-wrap{padding:1.6rem 1rem 3rem;}
+  .profile-card{padding:1.6rem 1.2rem;}
+  .profile-header{
+    flex-direction:column;
+    text-align:center;
+    gap:1rem;
+  }
+  .profile-header-info{min-width:0;width:100%;}
+  .profile-actions{flex-direction:column;}
+  .btn{min-width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar">
+  <a href="index.html" class="brand">Rental<span>Car</span> AI</a>
+  <a href="dashboard.html" class="nav-back">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+</nav>
+
+<!-- ===================== PAGE CONTENT ===================== -->
+<div class="page-wrap">
+
+  <h2 class="page-title">My <span>Profile</span></h2>
+  <p class="page-sub">View and manage your personal account information.</p>
+
+  <!-- ============ PROFILE CARD (glassmorphism) ============ -->
+  <div class="profile-card" id="profileCard">
+
+    <!-- Avatar + Name + Email header -->
+    <div class="profile-header">
+      <div class="avatar-wrap">
+        <!-- Avatar shows the user's first initial by default -->
+        <div class="avatar-circle" id="avatarCircle">U</div>
+        <div class="avatar-badge" title="Change photo" onclick="showToast('Photo upload coming soon', '#3b82f6')">
+          <i class="fas fa-camera"></i>
+        </div>
+      </div>
+      <div class="profile-header-info">
+        <div class="profile-name" id="profileName">Loading...</div>
+        <div class="profile-email" id="profileEmailTop">Loading...</div>
+        <span class="profile-badge"><i class="fas fa-shield-alt"></i> Verified Account</span>
+      </div>
+    </div>
+
+    <!-- Detail rows: Name / Email / Phone / City / ID / Member Since / Total Bookings -->
+    <div class="detail-list">
+
+      <!-- Name row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-user"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">Full Name</div>
+          <div class="detail-value" id="viewName">—</div>
+          <input type="text" class="detail-input" id="inputName" placeholder="Enter your name">
+        </div>
+      </div>
+
+      <!-- Email row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-envelope"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">Email Address</div>
+          <div class="detail-value" id="viewEmail">—</div>
+        </div>
+      </div>
+
+      <!-- User ID row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-id-card"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">User ID</div>
+          <div class="detail-value" id="viewUserId">—</div>
+        </div>
+      </div>
+
+      <!-- Phone row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-phone"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">Phone Number</div>
+          <div class="detail-value" id="viewPhone">—</div>
+          <input type="tel" class="detail-input" id="inputPhone" placeholder="+91 98765 43210">
+        </div>
+      </div>
+
+      <!-- City row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">City</div>
+          <div class="detail-value" id="viewCity">—</div>
+          <input type="text" class="detail-input" id="inputCity" placeholder="Enter your city">
+        </div>
+      </div>
+
+      <!-- Member Since row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">Member Since</div>
+          <div class="detail-value" id="viewMemberSince">June 2026</div>
+        </div>
+      </div>
+
+      <!-- Total Bookings row -->
+      <div class="detail-row">
+        <div class="detail-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="detail-text">
+          <div class="detail-label">Total Bookings</div>
+          <div class="detail-value" id="viewTotalBookings">0</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Action buttons: Edit Profile + Logout -->
+    <div class="profile-actions">
+
+      <button class="btn btn-edit" id="editBtn" onclick="toggleEditMode()">
+        <i class="fas fa-pen"></i>
+        <span class="btn-label">Edit Profile</span>
+        <span class="btn-label-save">Save Changes</span>
+      </button>
+
+      <a href="my-bookings.html" class="btn btn-edit">
+        <i class="fas fa-calendar-check"></i>
+        My Bookings
+      </a>
+
+      <a href="admin.html" class="btn btn-edit" style="background:var(--blue); color:#fff; border:1px solid rgba(59,130,246,0.3);">
+        <i class="fas fa-user-shield"></i>
+        Admin Panel
+      </a>
+
+      <button class="btn btn-logout" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+
+    </div>
+
+  </div>
+  <!-- ============ END PROFILE CARD ============ -->
+
+</div>
+
+<!-- Toast notification container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   PROFILE PAGE SCRIPT
+   - Loads user data from localStorage key "rcai_user"
+   - Displays it in the profile card
+   - Fetches dynamic booking count from API
+   - Handles Edit Profile (inline editing) and Logout
+   ============================================================ */
+
+// Name of the localStorage key where user info is stored
+const STORAGE_KEY = "rcai_user";
+
+/**
+ * Reads the logged-in user's data from localStorage.
+ * Returns a default object if nothing is stored yet,
+ * so the page never crashes on first load.
+ */
+function getUserData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return null;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Error parsing rcai_user from localStorage:", e);
+    return {
+      name: "Guest User",
+      email: "Not available",
+      phone: "Not added",
+      city: "Not added"
+    };
+  }
+}
+
+/**
+ * Saves the (possibly edited) user object back to localStorage
+ * under the same "rcai_user" key.
+ */
+function saveUserData(userObj) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(userObj));
+}
+
+/**
+ * Populates all the profile card fields with data
+ * pulled from localStorage. Called once on page load.
+ */
+function loadProfile() {
+  const user = getUserData();
+  if (!user) return;
+
+  // Avatar initial = first letter of the user's name
+  const initial = (user.name || "U").trim().charAt(0).toUpperCase();
+  document.getElementById("avatarCircle").textContent = initial;
+
+  // Header section
+  document.getElementById("profileName").textContent = user.name || "Guest User";
+  document.getElementById("profileEmailTop").textContent = user.email || "Not available";
+
+  // Detail rows (view mode)
+  document.getElementById("viewName").textContent = user.name || "Not available";
+  document.getElementById("viewEmail").textContent = user.email || "Not available";
+  document.getElementById("viewPhone").textContent = user.phone || "Not added";
+  document.getElementById("viewCity").textContent  = user.city  || "Not added";
+  document.getElementById("viewUserId").textContent = user.id || "N/A";
+
+  // Pre-fill the edit inputs too, so editing starts from current values
+  document.getElementById("inputName").value = user.name || "";
+  document.getElementById("inputPhone").value = user.phone || "";
+  document.getElementById("inputCity").value  = user.city  || "";
+
+  // Fetch total bookings from database REST API
+  if (user.id) {
+    fetch(`http://localhost:8080/api/bookings/user/${user.id}`)
+      .then(res => res.json())
+      .then(bookings => {
+        document.getElementById("viewTotalBookings").textContent = bookings.length;
+      })
+      .catch(err => {
+        console.error("Error loading total bookings:", err);
+        document.getElementById("viewTotalBookings").textContent = "0";
+      });
+  }
+}
+
+/**
+ * Toggles between "view mode" and "edit mode" for the profile card.
+ * In edit mode, text values are replaced by editable input fields.
+ * Clicking the button again saves the changes back to localStorage.
+ */
+function toggleEditMode() {
+  const card = document.getElementById("profileCard");
+  const isEditing = card.classList.contains("editing-mode");
+
+  if (!isEditing) {
+    // Switch INTO edit mode
+    card.classList.add("editing-mode");
+  } else {
+    // Switch OUT of edit mode -> validate & save
+    const name  = document.getElementById("inputName").value.trim();
+    const phone = document.getElementById("inputPhone").value.trim();
+    const city  = document.getElementById("inputCity").value.trim();
+
+    if (!name) {
+      showToast("Name cannot be empty", "#e84545");
+      return; // stay in edit mode until fixed
+    }
+
+    // Get existing user object and update fields
+    const user = getUserData();
+    if (!user) return;
+
+    user.name  = name;
+    user.phone = phone;
+    user.city  = city;
+
+    // Save locally
+    saveUserData(user);
+
+    // Save to the database using register API (which will update since user has id)
+    fetch("http://localhost:8080/api/users/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    })
+    .then(res => {
+      if (res.ok) {
+        showToast("Profile synchronized with database");
+      } else {
+        showToast("Profile saved locally, server sync failed", "#f59e0b");
+      }
+    })
+    .catch(err => {
+      console.error("Database sync error:", err);
+      showToast("Profile saved locally (Offline)", "#f59e0b");
+    });
+
+    loadProfile();        // refresh the view with new values
+    card.classList.remove("editing-mode");
+    showToast("Profile updated successfully");
+  }
+}
+
+/**
+ * Logs the user out:
+ * - Removes "rcai_user" from localStorage
+ * - Redirects to login.html
+ */
+function logoutUser() {
+  const confirmLogout = confirm("Are you sure you want to log out?");
+  if (!confirmLogout) return;
+
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+/**
+ * Shows a small toast notification in the bottom-right corner.
+ * Used for feedback like "Profile updated successfully".
+ */
+function showToast(message, color = "#22c55e") {
+  const container = document.getElementById("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerHTML = `<i class="fas fa-check-circle" style="color:${color};"></i>${message}`;
+  container.appendChild(toast);
+
+  // Auto-remove toast after 3 seconds
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ============================================================
+// INITIALIZE PAGE — run as soon as the script loads
+// ============================================================
+loadProfile();
+</script>
+
+</body>
+</html>

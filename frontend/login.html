@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign In — RentalCar AI</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg-primary:#080c14;--bg-secondary:#0d1421;--bg-card:rgba(255,255,255,0.04);--border-glass:rgba(255,255,255,0.08);--accent:#c8a84b;--accent-dim:rgba(200,168,75,0.15);--accent-glow:rgba(200,168,75,0.3);--text-primary:#f0f0f0;--text-muted:#7a8499;--text-dim:#4a5568;--error:#e84545;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg-secondary);}::-webkit-scrollbar-thumb{background:var(--accent);}
+
+/* LAYOUT */
+.auth-wrapper{flex:1;display:flex;min-height:100vh;}
+.auth-left{flex:1;background:var(--bg-secondary);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:4rem;}
+.auth-left::before{content:'';position:absolute;top:-150px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,168,75,0.08) 0%,transparent 70%);}
+.auth-left::after{content:'';position:absolute;bottom:-100px;right:-100px;width:300px;height:300px;background:radial-gradient(circle,rgba(59,130,246,0.05) 0%,transparent 70%);}
+.auth-right{width:480px;min-width:480px;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;padding:3rem 2.5rem;border-left:1px solid var(--border-glass);}
+
+/* LEFT PANEL */
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:3rem;position:relative;z-index:1;}
+.brand span{color:var(--accent);}
+.left-headline{font-family:'Syne',sans-serif;font-size:clamp(2rem,3vw,2.8rem);font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:1rem;position:relative;z-index:1;}
+.left-headline em{font-style:normal;color:var(--accent);}
+.left-sub{color:var(--text-muted);font-size:.92rem;line-height:1.7;max-width:380px;position:relative;z-index:1;margin-bottom:3rem;}
+.left-features{position:relative;z-index:1;}
+.left-feature{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;}
+.left-feature-icon{width:32px;height:32px;min-width:32px;background:var(--accent-dim);border:1px solid rgba(200,168,75,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.8rem;}
+.left-feature-text{font-size:.82rem;color:var(--text-muted);}
+.car-visual{position:absolute;bottom:0;right:0;font-size:12rem;opacity:.04;line-height:1;pointer-events:none;}
+
+/* CAR CARDS PREVIEW */
+.preview-cards{position:relative;z-index:1;margin-top:3rem;}
+.preview-card{background:var(--bg-card);border:1px solid var(--border-glass);border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;margin-bottom:.7rem;width:fit-content;}
+.preview-card-icon{font-size:1.8rem;}
+.preview-card-info h6{font-size:.82rem;font-weight:600;margin:0 0 .15rem;}
+.preview-card-info p{font-size:.72rem;color:var(--text-muted);margin:0;}
+.preview-card-price{margin-left:2rem;font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);font-size:.9rem;}
+
+/* FORM */
+.auth-form-container{width:100%;max-width:380px;}
+.auth-form-eyebrow{font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:.6rem;}
+.auth-form-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-1px;margin-bottom:.4rem;}
+.auth-form-sub{font-size:.82rem;color:var(--text-muted);margin-bottom:2rem;}
+.auth-form-sub a{color:var(--accent);text-decoration:none;font-weight:600;}
+
+.form-group{margin-bottom:1.2rem;position:relative;}
+.form-label-custom{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600;display:block;margin-bottom:.5rem;}
+.form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-glass);color:var(--text-primary);border-radius:10px;padding:.8rem 1rem .8rem 2.8rem;font-size:.9rem;font-family:'Inter',sans-serif;transition:all .3s;outline:none;}
+.form-input:focus{background:rgba(255,255,255,0.07);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.form-input::placeholder{color:var(--text-dim);}
+.form-input.error{border-color:var(--error);}
+.input-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem;pointer-events:none;margin-top:.9rem;}
+.password-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-top:.9rem;background:none;border:none;padding:0;}
+.password-toggle:hover{color:var(--accent);}
+.field-error{font-size:.72rem;color:var(--error);margin-top:.3rem;display:none;}
+.field-error.show{display:block;}
+
+.form-options{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.remember-me{display:flex;align-items:center;gap:.5rem;cursor:pointer;}
+.remember-me input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;}
+.remember-me label{font-size:.8rem;color:var(--text-muted);cursor:pointer;}
+.forgot-link{font-size:.8rem;color:var(--accent);text-decoration:none;}
+.forgot-link:hover{text-decoration:underline;}
+
+.btn-submit{width:100%;background:var(--accent);color:#000;border:none;padding:.9rem;border-radius:10px;font-weight:700;font-size:.95rem;letter-spacing:.3px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.btn-submit:hover{background:#e0b84f;transform:translateY(-1px);box-shadow:0 10px 30px var(--accent-glow);}
+.btn-submit:active{transform:translateY(0);}
+.btn-submit.loading{pointer-events:none;opacity:.8;}
+.btn-submit .spinner{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+.btn-submit.loading .btn-text{display:none;}
+.btn-submit.loading .spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border-glass);}
+.divider span{font-size:.72rem;color:var(--text-muted);white-space:nowrap;}
+
+.btn-social{width:100%;background:transparent;border:1px solid var(--border-glass);color:var(--text-primary);border-radius:10px;padding:.75rem;font-size:.85rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.6rem;text-decoration:none;}
+.btn-social:hover{border-color:var(--accent);color:var(--accent);}
+
+.demo-hint{background:var(--accent-dim);border:1px solid rgba(200,168,75,0.2);border-radius:8px;padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.78rem;color:var(--text-muted);display:flex;align-items:flex-start;gap:.5rem;}
+.demo-hint i{color:var(--accent);margin-top:.1rem;}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:2rem;right:2rem;z-index:9999;}
+.toast-msg{background:rgba(8,12,20,0.95);border:1px solid var(--border-glass);backdrop-filter:blur(20px);border-radius:10px;padding:1rem 1.4rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;animation:slide-in .3s ease;min-width:260px;}
+.toast-msg.success{border-color:rgba(34,197,94,0.3);}
+.toast-msg.success i{color:#22c55e;}
+.toast-msg.error-toast{border-color:rgba(232,69,69,0.3);}
+.toast-msg.error-toast i{color:var(--error);}
+@keyframes slide-in{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+@media(max-width:900px){
+  .auth-left{display:none;}
+  .auth-right{width:100%;min-width:unset;border:none;padding:2rem 1.5rem;}
+  .auth-form-container{max-width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="auth-wrapper">
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <a href="index.html" class="brand" style="text-decoration:none;color:var(--text-primary);">Rental<span>Car</span> <span style="color:var(--text-muted);font-size:.75rem;vertical-align:middle;">AI</span></a>
+    <h2 class="left-headline">Your next<br/>great drive<br/>starts <em>here</em></h2>
+    <p class="left-sub">Access your bookings, explore our premium fleet, and get personalized AI recommendations every time you log in.</p>
+    <div class="left-features">
+      <div class="left-feature">
+        <div class="left-feature-icon"><i class="fas fa-robot"></i></div>
+        <div class="left-feature-text">AI-powered car recommendations tailored to you</div>
+      </div>
+      <div class="left-feature">
+        <div class="left-feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="left-feature-text">Secure bookings with instant confirmation</div>
+      </div>
+      <div class="left-feature">
+        <div class="left-feature-icon"><i class="fas fa-history"></i></div>
+        <div class="left-feature-text">Full booking history and easy management</div>
+      </div>
+    </div>
+    <div class="preview-cards">
+      <div class="preview-card">
+        <div class="preview-card-icon">⚡</div>
+        <div class="preview-card-info"><h6>Tesla Model 3</h6><p>Electric · Auto · 5 Seats</p></div>
+        <div class="preview-card-price">₹8,900/day</div>
+      </div>
+      <div class="preview-card" style="margin-left:2rem;">
+        <div class="preview-card-icon">🏎️</div>
+        <div class="preview-card-info"><h6>Mercedes GLE</h6><p>Diesel · Auto · 5 Seats</p></div>
+        <div class="preview-card-price">₹12,500/day</div>
+      </div>
+    </div>
+    <div class="car-visual">🚗</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-form-container">
+      <div class="auth-form-eyebrow">Welcome Back</div>
+      <h1 class="auth-form-title">Sign in</h1>
+      <p class="auth-form-sub">New here? <a href="register.html">Create an account →</a></p>
+
+      <div class="demo-hint">
+        <i class="fas fa-info-circle"></i>
+        <div>Demo: use <strong style="color:var(--accent);">demo@rentalcar.ai</strong> / <strong style="color:var(--accent);">demo123</strong> or any valid email to log in.</div>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label-custom">Email Address</label>
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" class="form-input" id="email" placeholder="you@example.com" autocomplete="email"/>
+          <div class="field-error" id="emailError">Please enter a valid email address.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label-custom">Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" class="form-input" id="password" placeholder="Your password" autocomplete="current-password"/>
+          <button type="button" class="password-toggle" onclick="togglePwd('password','eyeIcon')"><i class="fas fa-eye" id="eyeIcon"></i></button>
+          <div class="field-error" id="passwordError">Password must be at least 6 characters.</div>
+        </div>
+        <div class="form-options">
+          <div class="remember-me">
+            <input type="checkbox" id="rememberMe"/>
+            <label for="rememberMe">Remember me</label>
+          </div>
+          <a href="#" class="forgot-link" onclick="forgotPassword()">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="btn-text"><i class="fas fa-sign-in-alt me-2"></i>Sign In</span>
+          <div class="spinner"></div>
+        </button>
+        <div class="divider"><span>or continue with</span></div>
+        <a href="#" class="btn-social mb-2" onclick="socialLogin('Google')">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+function togglePwd(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if(inp.type === 'password'){inp.type='text'; icon.className='fas fa-eye-slash';}
+  else{inp.type='password'; icon.className='fas fa-eye';}
+}
+
+function showToast(msg, type='success'){
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast-msg ${type}`;
+  const icon = type==='success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+  t.innerHTML = `<i class="fas ${icon}"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+function forgotPassword(){
+  const email = document.getElementById('email').value;
+  if(!email){showToast('Enter your email first','error-toast');return;}
+  showToast('Password reset link sent to '+email,'success');
+}
+
+function socialLogin(provider){
+  showToast('Redirecting to '+provider+'...','success');
+  setTimeout(()=>window.location.href='dashboard.html',1000);
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  let valid = true;
+
+  // Validate email
+  const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRx.test(email)){
+    document.getElementById('email').classList.add('error');
+    document.getElementById('emailError').classList.add('show');
+    valid = false;
+  } else {
+    document.getElementById('email').classList.remove('error');
+    document.getElementById('emailError').classList.remove('show');
+  }
+  // Validate password
+  if(password.length < 6){
+    document.getElementById('password').classList.add('error');
+    document.getElementById('passwordError').classList.add('show');
+    valid = false;
+  } else {
+    document.getElementById('password').classList.remove('error');
+    document.getElementById('passwordError').classList.remove('show');
+  }
+  if(!valid) return;
+
+  fetch("http://localhost:8080/api/users/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        email: email,
+        password: password
+    })
+})
+.then(res => res.json())
+.then(user => {
+
+    localStorage.setItem(
+        "rcai_user",
+        JSON.stringify(user)
+    );
+
+    showToast("Login Successful","success");
+
+    setTimeout(()=>{
+        window.location.href="dashboard.html";
+    },1000);
+
+})
+.catch(err=>{
+    showToast("Invalid Login","error-toast");
+});
+});
+
+// Auto-fill if remembered
+if(localStorage.getItem('rcai_remember')){
+  const u = JSON.parse(localStorage.getItem('rcai_user')||'{}');
+  if(u.email) document.getElementById('email').value = u.email;
+  document.getElementById('rememberMe').checked = true;
+}
+</script>
+</body>
+</html>

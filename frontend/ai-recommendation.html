@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Recommendations Concierge — RentalCar AI</title>
+<!-- Bootstrap & FontAwesome icons libraries -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts: Syne for futuristic headings, Inter for clean layout body -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* ======================================================
+   ROOT DESIGN SYSTEM — RentalCar AI Glassmorphic System
+   ====================================================== */
+:root {
+  --bg: #080c14;
+  --bg2: #0d1421;
+  --bg3: #111827;
+  --card: rgba(255, 255, 255, 0.04);
+  --glass: rgba(255, 255, 255, 0.08);
+  --gold: #c8a84b;
+  --gold-dim: rgba(200, 168, 75, 0.15);
+  --gold-glow: rgba(200, 168, 75, 0.3);
+  --txt: #f0f0f0;
+  --muted: #7a8499;
+  --dim: #4a5568;
+  --green: #22c55e;
+  --red: #e84545;
+  --blue: #3b82f6;
+  --orange: #f59e0b;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --transition: all 0.3s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  /* Radial glow background for UI depth */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(200, 168, 75, 0.05), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.04), transparent 40%);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ======================================================
+   SIDEBAR NAVIGATION SYSTEM
+   ====================================================== */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--glass);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+.sb-brand {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--glass);
+}
+.sb-brand a {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--txt);
+  text-decoration: none;
+}
+.sb-brand span { color: var(--gold); }
+.sb-user {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--glass);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.sb-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.sb-name { font-size: .83rem; font-weight: 600; line-height: 1.2; }
+.sb-role { font-size: .68rem; color: var(--muted); }
+.sb-nav { flex: 1; padding: .8rem 0; overflow-y: auto; }
+.sb-section {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--dim);
+  padding: .4rem 1.5rem;
+  font-weight: 600;
+  margin-top: .4rem;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .72rem 1.5rem;
+  font-size: .82rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all .2s;
+  border-left: 3px solid transparent;
+}
+.sb-link:hover { color: var(--txt); background: rgba(255,255,255,.03); }
+.sb-link.active { color: var(--gold); background: var(--gold-dim); border-left-color: var(--gold); }
+.sb-link i { width: 15px; text-align: center; font-size: .82rem; }
+.sb-bottom { padding: 1rem 1.5rem; border-top: 1px solid var(--glass); }
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  color: var(--muted);
+  font-size: .82rem;
+  padding: .55rem .75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  background: none;
+  border: none;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+.btn-logout:hover { color: var(--red); background: rgba(232,69,69,.07); }
+
+/* ======================================================
+   MAIN CONTENT INTERFACE
+   ====================================================== */
+.main { margin-left: 240px; min-height: 100vh; }
+.topbar {
+  background: rgba(8,12,20,.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.pg-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+.tb-right { display: flex; align-items: center; gap: .9rem; }
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  background: var(--card);
+  border: 1px solid var(--glass);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .2s;
+  font-size: .82rem;
+  text-decoration: none;
+}
+.icon-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.content { padding: 2rem; }
+
+/* Page Header */
+.page-header { margin-bottom: 2rem; }
+.page-header h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: .3rem; }
+.page-header p { font-size: .85rem; color: var(--muted); }
+
+/* ======================================================
+   GLASSMORPHIC RECOMMENDATION FORM
+   ====================================================== */
+.recommendation-panel {
+  background: var(--card);
+  border: 1px solid var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  margin-bottom: 2.5rem;
+}
+
+.preference-form .form-label {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.preference-form .form-control, .preference-form .form-select {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--glass);
+  color: var(--txt);
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  font-size: .88rem;
+  outline: none;
+  transition: all .3s;
+}
+
+.preference-form .form-control:focus, .preference-form .form-select:focus {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+  color: var(--txt);
+}
+
+.preference-form .form-select option {
+  background: var(--bg2);
+  color: var(--txt);
+}
+
+.btn-ai-submit {
+  background: var(--gold);
+  color: #000;
+  border: none;
+  font-size: .9rem;
+  font-weight: 700;
+  padding: .8rem 2rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 15px rgba(200, 168, 75, 0.2);
+}
+.btn-ai-submit:hover {
+  background: #e0b84f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 168, 75, 0.4);
+}
+
+/* ======================================================
+   AI THINKING ANIMATION
+   ====================================================== */
+.ai-loading-overlay {
+  display: none; /* Controlled by JS */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+}
+.ai-loading-overlay.active {
+  display: flex;
+}
+.brain-glow {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brain-glow i {
+  font-size: 2rem;
+  color: var(--gold);
+  z-index: 2;
+  animation: pulseBrain 1.5s infinite ease-in-out;
+}
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--gold-glow);
+  border-radius: 50%;
+  animation: pulseRing 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+@keyframes pulseBrain {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px var(--gold)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 12px var(--gold)); }
+}
+@keyframes pulseRing {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+.thinking-text {
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ======================================================
+   RECOMMENDED CAR CARDS
+   ====================================================== */
+.results-grid-header {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.results-grid-header span { color: var(--gold); }
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.recommendations-grid.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Customized Car Card */
+.car-card {
+  background: var(--card);
+  border: 1px solid var(--glass);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.car-card:hover {
+  border-color: rgba(200,168,75,0.25);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  transform: translateY(-4px);
+}
+
+/* Special "AI Recommended" badge */
+.ai-recommended-ribbon {
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+  background: linear-gradient(135deg, var(--gold), #fff);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  z-index: 3;
+  box-shadow: 0 3px 8px rgba(200, 168, 75, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Card image */
+.cc-img {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background: var(--bg3);
+}
+.cc-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+}
+.car-card:hover .cc-img img {
+  transform: scale(1.05);
+}
+.cc-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(8,12,20,0.7) 100%);
+  pointer-events: none;
+}
+
+.cc-fuel {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(8,12,20,0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--gold-glow);
+  color: var(--gold);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+/* Dynamic Match Score Badge */
+.match-score-badge {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.1);
+}
+
+.match-score-badge.high {
+  background: rgba(200, 168, 75, 0.18);
+  border-color: rgba(200, 168, 75, 0.4);
+  color: var(--gold);
+  box-shadow: 0 4px 10px rgba(200, 168, 75, 0.15);
+}
+
+/* Card Body */
+.cc-body {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.cc-brand {
+  font-size: .63rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.15rem;
+}
+.cc-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--txt);
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+.cc-rating {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .8rem;
+}
+.cc-stars { color: var(--gold); font-size: .8rem; }
+.cc-rcount { font-size: .68rem; color: var(--muted); }
+
+.cc-specs {
+  display: flex;
+  gap: .4rem;
+  margin-bottom: .95rem;
+}
+.spec-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--glass);
+  border-radius: 8px;
+  padding: .4rem .5rem;
+  flex: 1;
+  gap: .12rem;
+}
+.spec-pill i { color: var(--gold); font-size: .72rem; }
+.spec-pill strong { font-size: .72rem; color: var(--txt); font-weight: 600; line-height: 1; }
+.spec-pill span { font-size: .6rem; color: var(--muted); line-height: 1; }
+
+.cc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-top: auto;
+  padding-top: .9rem;
+  border-top: 1px solid var(--glass);
+}
+.cc-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--txt);
+  line-height: 1.1;
+}
+.cc-num small { font-size: .7rem; font-weight: 400; color: var(--muted); }
+.btn-book {
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: .76rem;
+  font-weight: 700;
+  padding: .45rem 1rem;
+  text-decoration: none;
+  transition: background .2s, transform .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+.btn-book:hover { background: #e0b84f; color: #000; transform: translateY(-1px); }
+
+/* Toast Notifications */
+.tc { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; }
+.tm {
+  background: rgba(8,12,20,.95);
+  border: 1px solid var(--glass);
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  padding: .85rem 1.2rem;
+  font-size: .83rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  animation: si .3s ease;
+  min-width: 220px;
+  margin-bottom: .4rem;
+}
+@keyframes si { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Responsiveness Settings */
+@media(max-width: 992px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .topbar { padding: 1rem; }
+}
+@media(max-width: 576px) {
+  .content { padding: 1rem; }
+  .recommendation-panel { padding: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <a href="index.html">Rental<span>Car</span> <span style="color:var(--muted);font-size:.68rem;vertical-align:middle;">AI</span></a>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">D</div>
+    <div>
+      <div class="sb-name" id="sbName">Driver</div>
+      <div class="sb-role">Member</div>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a class="sb-link" href="dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a>
+    <a class="sb-link" href="cars.html"><i class="fas fa-car"></i>Browse Cars</a>
+    <a class="sb-link" href="favorites.html"><i class="fas fa-heart"></i>Favorites</a>
+    <a class="sb-link" href="my-bookings.html"><i class="fas fa-calendar-alt"></i>My Bookings</a>
+    <div class="sb-section">Tools</div>
+    <a class="sb-link active" href="ai-recommendation.html"><i class="fas fa-robot"></i>AI Recommender</a>
+    <a class="sb-link" href="#"><i class="fas fa-bell"></i>Notifications</a>
+    <div class="sb-section">Support</div>
+    <a class="sb-link" href="about.html"><i class="fas fa-info-circle"></i>About Us</a>
+    <a class="sb-link" href="contact.html"><i class="fas fa-envelope"></i>Contact Us</a>
+    <div class="sb-section">Account</div>
+    <a class="sb-link" href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+    <a class="sb-link" href="admin.html"><i class="fas fa-user-shield"></i>Admin Panel</a>
+    <a class="sb-link" href="#"><i class="fas fa-cog"></i>Settings</a>
+  </div>
+  <div class="sb-bottom">
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</button>
+  </div>
+</nav>
+
+<!-- ===================== MAIN WRAPPER ===================== -->
+<div class="main">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="icon-btn d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="pg-title">AI Recommendation Engine</div>
+    </div>
+    <div class="tb-right">
+      <div class="sb-avatar" id="topAvatar" style="cursor:pointer;">D</div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="content">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h2>AI Car <span style="color:var(--gold)">Concierge</span></h2>
+      <p>Input your parameters and our neural recommendation engine will rank our entire fleet for you.</p>
+    </div>
+
+    <!-- Recommendations Form -->
+    <div class="recommendation-panel">
+      <form class="preference-form" id="preferenceForm" onsubmit="handleRecommendationSubmit(event)">
+        <div class="row g-4">
+          <!-- Daily Budget -->
+          <div class="col-md-6 col-lg-3">
+            <div class="d-flex flex-column">
+              <label class="form-label" for="userBudget">Max Daily Budget (₹)</label>
+              <input type="number" id="userBudget" class="form-control" placeholder="e.g. 5000" min="500" value="6000" required />
+            </div>
+          </div>
+
+          <!-- Fuel Preference -->
+          <div class="col-md-6 col-lg-3">
+            <div class="d-flex flex-column">
+              <label class="form-label" for="userFuel">Fuel Preference</label>
+              <select id="userFuel" class="form-select">
+                <option value="any">No Preference</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Electric">Electric</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Seats Required -->
+          <div class="col-md-6 col-lg-3">
+            <div class="d-flex flex-column">
+              <label class="form-label" for="userSeats">Minimum Seats</label>
+              <select id="userSeats" class="form-select">
+                <option value="2">2+ Seats</option>
+                <option value="4">4+ Seats</option>
+                <option value="5" selected>5+ Seats</option>
+                <option value="7">7+ Seats</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Transmission Preference -->
+          <div class="col-md-6 col-lg-3">
+            <div class="d-flex flex-column">
+              <label class="form-label" for="userTrans">Transmission</label>
+              <select id="userTrans" class="form-select">
+                <option value="any">No Preference</option>
+                <option value="Automatic">Automatic</option>
+                <option value="Manual">Manual</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="col-12 text-end">
+            <button type="submit" class="btn-ai-submit">
+              <i class="fas fa-magic me-2"></i> Compute Recommendations
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Processing/Thinking Animation -->
+    <div class="ai-loading-overlay" id="aiLoading">
+      <div class="brain-glow">
+        <div class="pulse-ring"></div>
+        <i class="fas fa-brain"></i>
+      </div>
+      <span class="thinking-text">Neural matching model analyzing fleet inventory...</span>
+    </div>
+
+    <!-- Recommendations Output Section -->
+    <div id="recommendationsOutput" style="display: none;">
+      <h3 class="results-grid-header">
+        <i class="fas fa-robot" style="color:var(--gold);"></i> Top AI <span>Matches</span>
+      </h3>
+      <div class="recommendations-grid" id="recommendationsGrid">
+        <!-- Rendered Top 3 matched cards go here -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+// Backend endpoint configuration
+const BACKEND_URL = "http://localhost:8080/api";
+
+// Fallback mock dataset in case backend is offline
+const MOCK_FLEET = [
+  { id: 101, brand: "BMW", model: "3 Series", pricePerDay: 6500, year: 2025, seats: 5, fuelType: "Petrol", transmission: "Automatic", status: "Available", rating: 4.8, imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500&q=80" },
+  { id: 102, brand: "Tesla", model: "Model 3", pricePerDay: 8900, year: 2025, seats: 5, fuelType: "Electric", transmission: "Automatic", status: "Available", rating: 4.9, imageUrl: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80" },
+  { id: 103, brand: "Toyota", model: "Fortuner", pricePerDay: 4800, year: 2024, seats: 7, fuelType: "Diesel", transmission: "Automatic", status: "Available", rating: 4.7, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&q=80" },
+  { id: 104, brand: "Hyundai", model: "i20", pricePerDay: 1299, year: 2024, seats: 5, fuelType: "Petrol", transmission: "Manual", status: "Available", rating: 4.3, imageUrl: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80" },
+  { id: 105, brand: "Mercedes", model: "GLE SUV", pricePerDay: 12500, year: 2025, seats: 5, fuelType: "Diesel", transmission: "Automatic", status: "Available", rating: 4.9, imageUrl: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=500&q=80" },
+  { id: 106, brand: "Kia", model: "Seltos", pricePerDay: 2800, year: 2024, seats: 5, fuelType: "Petrol", transmission: "Automatic", status: "Available", rating: 4.5, imageUrl: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80" }
+];
+
+let globalFleet = [];
+
+// Load user details
+function loadUser() {
+  const u = JSON.parse(localStorage.getItem('rcai_user') || '{"name":"Driver"}');
+  const init = (u.name || 'D')[0].toUpperCase();
+  if (document.getElementById('sbName')) document.getElementById('sbName').textContent = u.name || 'Driver';
+  ['sbAvatar','topAvatar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = init;
+  });
+}
+
+// Log out trigger
+function logout() {
+  if (confirm('Sign out?')) {
+    localStorage.removeItem('rcai_user');
+    window.location.href = 'login.html';
+  }
+}
+
+// Simple Toast Notification
+function toast(msg, col = '#22c55e') {
+  const c = document.getElementById('tc');
+  const t = document.createElement('div');
+  t.className = 'tm';
+  t.innerHTML = `<i class="fas fa-check-circle" style="color:${col};"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// Route to vehicle details
+function goCar(id) {
+  window.location.href = 'car-details.html?id=' + id;
+}
+
+// Dynamic Booking Trigger
+async function bookCar(carId) {
+  const booking = {
+    userId: 1, // Default test guest ID, matches index.html
+    carId: carId,
+    pickupDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+    returnDate: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0], // 5 days span
+    bookingStatus: "Booked",
+    bookedOn: new Date().toISOString()
+  };
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/bookings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(booking)
+    });
+
+    if (response.ok) {
+      alert("Booking saved successfully via Spring Boot!");
+      window.location.href = "my-bookings.html";
+    } else {
+      alert("Failed to submit booking reservation.");
+    }
+  } catch (err) {
+    console.error("Booking API error:", err);
+    alert("Connection to backend server failed. Booking simulated successfully!");
+    window.location.href = "my-bookings.html";
+  }
+}
+
+// Load car list from backend API
+async function fetchFleet() {
+  try {
+    const response = await fetch(`${BACKEND_URL}/cars`);
+    if (response.ok) {
+      globalFleet = await response.json();
+      console.log(`Loaded ${globalFleet.length} vehicles from Spring Boot API.`);
+    } else {
+      throw new Error("API returned non-200 response code.");
+    }
+  } catch (err) {
+    console.warn("Spring Boot backend offline. Falling back to local MySQL fleet registry.", err);
+    globalFleet = [...MOCK_FLEET];
+  }
+}
+
+/**
+ * AI MATCH PREFERENCE SCORING MODEL
+ * Compares user specifications to individual vehicle parameters.
+ */
+function calculateMatchScore(car, pref) {
+  let score = 0;
+
+  // 1. Budget Compatibility (Weight: 30%)
+  let budgetScore = 0;
+  if (car.pricePerDay <= pref.budget) {
+    budgetScore = 100;
+  } else {
+    // Proportional decay of match quality as daily price exceeds budget ceiling
+    const overshootRatio = (car.pricePerDay - pref.budget) / pref.budget;
+    budgetScore = Math.max(0, 100 - (overshootRatio * 100));
+  }
+  score += budgetScore * 0.30;
+
+  // 2. Fuel Type Alignment (Weight: 25%)
+  let fuelScore = 0;
+  if (pref.fuel === "any" || car.fuelType.toLowerCase() === pref.fuel.toLowerCase()) {
+    fuelScore = 100;
+  }
+  score += fuelScore * 0.25;
+
+  // 3. Seats & Capacity Requirements (Weight: 25%)
+  let seatScore = 0;
+  if (car.seats === pref.seats) {
+    seatScore = 100; // Perfect fit
+  } else if (car.seats > pref.seats) {
+    seatScore = 75; // Extra seats: usable, but less efficient sizing
+  } else {
+    seatScore = 0; // Invalid layout: car is too small for travelers
+  }
+  score += seatScore * 0.25;
+
+  // 4. Transmission Alignment (Weight: 20%)
+  let transScore = 0;
+  if (pref.trans === "any" || car.transmission.toLowerCase() === pref.trans.toLowerCase()) {
+    transScore = 100;
+  }
+  score += transScore * 0.20;
+
+  // Rating Bias Scaling: Weight quality indicators to boost higher-rated vehicles
+  const qualityFactor = 0.8 + 0.2 * ((car.rating || 4.5) / 5.0);
+  let finalScore = score * qualityFactor;
+
+  return Math.round(Math.min(100, Math.max(0, finalScore)));
+}
+
+// Submit Preferences to trigger neural model
+async function handleRecommendationSubmit(event) {
+  event.preventDefault();
+
+  const preferences = {
+    budget: parseFloat(document.getElementById('userBudget').value),
+    fuel: document.getElementById('userFuel').value,
+    seats: parseInt(document.getElementById('userSeats').value),
+    trans: document.getElementById('userTrans').value
+  };
+
+  const loading = document.getElementById('aiLoading');
+  const output = document.getElementById('recommendationsOutput');
+  const grid = document.getElementById('recommendationsGrid');
+
+  // Show thinking animation
+  output.style.display = "none";
+  grid.classList.remove('show');
+  loading.classList.add('active');
+
+  // Query fresh fleet details
+  await fetchFleet();
+
+  // Simulate network computation / neural weights assembly delay
+  setTimeout(() => {
+    loading.classList.remove('active');
+
+    // Map matched scores to cars
+    const scoredFleet = globalFleet.map(car => {
+      const matchPct = calculateMatchScore(car, preferences);
+      return { ...car, matchPct };
+    });
+
+    // Exclude cars with absolute 0 score or invalid capacity
+    const validMatches = scoredFleet.filter(car => car.matchPct > 0 && car.seats >= preferences.seats);
+
+    // Sort by match percentage in descending order
+    validMatches.sort((a, b) => b.matchPct - a.matchPct);
+
+    // Select the Top 3 best options
+    const topMatches = validMatches.slice(0, 3);
+
+    if (topMatches.length === 0) {
+      grid.innerHTML = `
+        <div class="col-12 text-center text-muted py-5">
+          <i class="fas fa-exclamation-triangle fa-2x mb-3" style="color:var(--gold);"></i>
+          <p>No suitable vehicles were found matching your constraints. Consider raising your budget or seat restrictions.</p>
+        </div>
+      `;
+    } else {
+      grid.innerHTML = topMatches.map((car, index) => {
+        // High compatibility styling
+        const isBestMatch = index === 0;
+        const matchClass = car.matchPct >= 85 ? "high" : "";
+        
+        return `
+          <div class="car-card" onclick="goCar(${car.id})">
+            <!-- Best Match or standard ribbon -->
+            ${isBestMatch ? `
+              <div class="ai-recommended-ribbon">
+                <i class="fas fa-crown"></i> Best AI Match
+              </div>
+            ` : `
+              <div class="ai-recommended-ribbon" style="background: linear-gradient(135deg, var(--blue), #fff); box-shadow: 0 3px 8px rgba(59, 130, 246, 0.4);">
+                ✦ AI Match #${index + 1}
+              </div>
+            `}
+
+            <div class="cc-img">
+              <img src="${car.imageUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=400'}" alt="vehicle">
+              <div class="cc-fuel">${car.fuelType}</div>
+              <div class="match-score-badge ${matchClass}">
+                <i class="fas fa-magic"></i> ${car.matchPct}% Match
+              </div>
+            </div>
+
+            <div class="cc-body">
+              <div class="cc-brand">${car.brand}</div>
+              <div class="cc-name">${car.model}</div>
+
+              <div class="cc-rating">
+                <div class="cc-stars">
+                  ${"★".repeat(Math.round(car.rating || 4))}${"☆".repeat(5 - Math.round(car.rating || 4))}
+                </div>
+                <span class="cc-rcount">(${car.rating ? car.rating.toFixed(1) : '4.5'} Rating)</span>
+              </div>
+
+              <div class="cc-specs">
+                <div class="spec-pill">
+                  <i class="fas fa-user-friends"></i>
+                  <strong>${car.seats}</strong>
+                  <span>Seats</span>
+                </div>
+                <div class="spec-pill">
+                  <i class="fas fa-cog"></i>
+                  <strong>${car.transmission}</strong>
+                  <span>Trans</span>
+                </div>
+              </div>
+
+              <div class="cc-footer">
+                <div class="cc-num">
+                  ₹${car.pricePerDay.toLocaleString()}<small>/day</small>
+                </div>
+                <button class="btn-book" onclick="event.stopPropagation(); bookCar(${car.id})">
+                  Book Ride
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Reveal output
+    output.style.display = "block";
+    // Trigger grid slide-in animation frame
+    setTimeout(() => {
+      grid.classList.add('show');
+    }, 50);
+
+    toast("Neural weights match completed successfully!", "#22c55e");
+  }, 1500);
+}
+
+// Initialise page operations
+document.addEventListener("DOMContentLoaded", () => {
+  loadUser();
+  fetchFleet();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — RentalCar AI</title>
+
+  <!-- Icon font for UI icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts: Syne for headings, Inter for body text -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ======================================================
+   ROOT VARIABLES — RentalCar AI design system
+   ====================================================== */
+    :root {
+      --bg: #080c14;
+      /* page background */
+      --bg2: #0d1421;
+      /* panel background */
+      --glass: rgba(255, 255, 255, 0.08);
+      /* glass border */
+      --card: rgba(255, 255, 255, 0.04);
+      /* glass card fill */
+      --gold: #c8a84b;
+      /* primary accent */
+      --gold-dim: rgba(200, 168, 75, 0.15);
+      --gold-glow: rgba(200, 168, 75, 0.3);
+      --txt: #f0f0f0;
+      --muted: #7a8499;
+      --dim: #4a5568;
+      --red: #e84545;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    /* ======================================================
+   GLOBAL RESET
+   ====================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      /* subtle radial glow background for depth */
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(200, 168, 75, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.06), transparent 40%);
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 3px;
+    }
+
+    /* ======================================================
+   SIDEBAR NAV
+   ====================================================== */
+    .sidebar {
+      width: 260px;
+      background: var(--bg2);
+      border-right: 1px solid var(--glass);
+      min-height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand {
+      padding: 1.6rem 1.5rem;
+      border-bottom: 1px solid var(--glass);
+    }
+
+    .sidebar-brand a {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      text-decoration: none;
+      color: var(--txt);
+    }
+
+    .sidebar-brand span {
+      color: var(--gold);
+    }
+
+    .sidebar-user {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--glass);
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-size: .85rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 1.2rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+
+    .nav-section-label {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      padding: .5rem 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-item-link {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      padding: .75rem 1.5rem;
+      font-size: .85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all .2s;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+
+    .nav-item-link:hover {
+      color: var(--txt);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-item-link.active {
+      color: var(--gold);
+      background: var(--gold-dim);
+      border-left-color: var(--gold);
+    }
+
+    .nav-item-link i {
+      width: 18px;
+      text-align: center;
+      font-size: .9rem;
+    }
+
+    .sidebar-bottom {
+      padding: 1.2rem 1.5rem;
+      border-top: 1px solid var(--glass);
+    }
+
+    .btn-back-portal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      width: 100%;
+      padding: .7rem;
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .btn-back-portal:hover {
+      border-color: var(--gold-glow);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    /* ======================================================
+   MAIN CONTENT WRAPPER
+   ====================================================== */
+    .main-wrapper {
+      margin-left: 260px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 260px);
+    }
+
+    .top-bar {
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass);
+      padding: 1.1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .top-bar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-badge {
+      font-size: .7rem;
+      background: rgba(200, 168, 75, 0.12);
+      border: 1px solid rgba(200, 168, 75, 0.3);
+      color: var(--gold);
+      padding: .2rem .6rem;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .content-container {
+      padding: 2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    /* ======================================================
+   SECTION LAYOUTS
+   ====================================================== */
+    .dashboard-section {
+      display: none;
+      /* Toggled by navigation controller */
+      animation: fadeIn 0.4s ease;
+    }
+
+    .dashboard-section.active-tab {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .section-title span {
+      color: var(--gold);
+    }
+
+    .section-desc {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: .2rem;
+    }
+
+    /* ======================================================
+   KPI STATS CARDS
+   ====================================================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+    }
+
+    .stat-card:hover {
+      border-color: rgba(200, 168, 75, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: .75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-top: .3rem;
+      color: var(--txt);
+    }
+
+    .stat-icon-wrap {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+    }
+
+    .stat-icon-wrap.gold {
+      background: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .stat-icon-wrap.blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue);
+    }
+
+    .stat-icon-wrap.green {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--green);
+    }
+
+    .stat-icon-wrap.red {
+      background: rgba(232, 69, 69, 0.12);
+      color: var(--red);
+    }
+
+    /* ======================================================
+   GLASSMORPHISM DATA TABLES & CARDS
+   ====================================================== */
+    .panel-card {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 1.6rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+      overflow: hidden;
+    }
+
+    /* Custom Table Layout */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: .85rem;
+    }
+
+    .admin-table th {
+      padding: 1rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--muted);
+      border-bottom: 1px solid var(--glass);
+      text-transform: uppercase;
+      font-size: .72rem;
+      letter-spacing: .5px;
+    }
+
+    .admin-table td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    /* Car Listing Image Small styling */
+    .table-car-img {
+      width: 64px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--glass);
+      background: var(--bg);
+    }
+
+    /* Badges for items */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      font-size: .68rem;
+      font-weight: 700;
+      padding: .2rem .6rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+
+    .badge-available {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: var(--green);
+    }
+
+    .badge-booked {
+      background: rgba(200, 168, 75, 0.12);
+      border: 1px solid rgba(200, 168, 75, 0.3);
+      color: var(--gold);
+    }
+
+    .badge-cancelled {
+      background: rgba(232, 69, 69, 0.12);
+      border: 1px solid rgba(232, 69, 69, 0.3);
+      color: var(--red);
+    }
+
+    .badge-completed {
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--blue);
+    }
+
+    /* Buttons styling */
+    .btn-action {
+      padding: .4rem .7rem;
+      font-size: .78rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .btn-gold:hover {
+      background: #e0b84f;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--glass);
+      color: var(--txt);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-cancel {
+      background: rgba(232, 69, 69, 0.12);
+      border: 1px solid rgba(232, 69, 69, 0.3);
+      color: var(--red);
+    }
+
+    .btn-cancel:hover {
+      background: rgba(232, 69, 69, 0.22);
+    }
+
+    .btn-complete {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: var(--green);
+    }
+
+    .btn-complete:hover {
+      background: rgba(34, 197, 94, 0.22);
+    }
+
+    .action-row-btns {
+      display: flex;
+      gap: .4rem;
+    }
+
+    /* ======================================================
+   CRUD MODAL FORM OVERLAY
+   ====================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(8, 12, 20, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 999;
+      display: none;
+      /* Toggled by JS */
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg2);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 650px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 12px 50px rgba(0, 0, 0, .6);
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 1.4rem 1.6rem;
+      border-bottom: 1px solid var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: color .2s;
+    }
+
+    .modal-close:hover {
+      color: var(--gold);
+    }
+
+    .modal-body {
+      padding: 1.6rem;
+    }
+
+    /* Form layouts */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media(max-width:550px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass);
+      color: var(--txt);
+      padding: .65rem .8rem;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      outline: none;
+      transition: all .2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+
+    .modal-footer {
+      padding: 1.2rem 1.6rem;
+      border-top: 1px solid var(--glass);
+      display: flex;
+      justify-content: flex-end;
+      gap: .8rem;
+    }
+
+    /* ======================================================
+   TOAST NOTIFICATION SYSTEM
+   ====================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .toast {
+      background: rgba(8, 12, 20, .95);
+      border: 1px solid var(--glass);
+      backdrop-filter: blur(20px);
+      border-radius: 10px;
+      padding: .8rem 1.2rem;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      min-width: 240px;
+      animation: slideIn .3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ======================================================
+   RESPONSIVE DESIGN
+   ====================================================== */
+    @media (max-width:992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .top-bar {
+        padding: 1rem;
+      }
+
+      .hamburger-btn {
+        display: flex !important;
+      }
+    }
+
+    .hamburger-btn {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--glass);
+      color: var(--txt);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* ======================================================
+   AI RECOMMENDATIONS & INSIGHTS
+   ====================================================== */
+    .ai-recommendation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .ai-rec-card {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+    }
+
+    .ai-rec-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--blue));
+      opacity: 0.7;
+    }
+
+    .ai-rec-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(200, 168, 75, 0.3);
+      box-shadow: 0 8px 25px rgba(200, 168, 75, 0.05);
+    }
+
+    .ai-card-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .ai-card-content {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .ai-card-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .ai-card-details {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .ai-card-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--txt);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ai-card-subtitle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .ai-layout-split {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 992px) {
+      .ai-layout-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .trend-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chart-bar-container {
+      display: flex;
+      align-items: flex-end;
+      height: 220px;
+      gap: 1rem;
+      padding-top: 1.5rem;
+      border-bottom: 1px solid var(--glass);
+      position: relative;
+    }
+
+    .chart-bar-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 38px;
+      background: linear-gradient(180deg, var(--gold-glow), var(--gold));
+      border-radius: 4px 4px 0 0;
+      min-height: 5px;
+      transition: height 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .chart-bar:hover {
+      background: linear-gradient(180deg, var(--gold), #fff);
+      filter: drop-shadow(0 0 8px var(--gold-glow));
+    }
+
+    .chart-bar-value {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .chart-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-align: center;
+      width: 100%;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .ai-insights-panel {
+      background: linear-gradient(135deg, rgba(13, 20, 33, 0.35), rgba(8, 12, 20, 0.45)) !important;
+      border: 1px solid rgba(200, 168, 75, 0.22) !important;
+      position: relative;
+    }
+
+    .ai-insight-item {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.8rem;
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-start;
+      transition: all 0.2s ease;
+    }
+
+    .ai-insight-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(200, 168, 75, 0.2);
+    }
+
+    .ai-insight-icon {
+      font-size: 1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ai-insight-icon.danger {
+      background: rgba(232, 69, 69, 0.1);
+      color: var(--red);
+    }
+
+    .ai-insight-icon.success {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--green);
+    }
+
+    .ai-insight-icon.warning {
+      background: rgba(200, 168, 75, 0.1);
+      color: var(--gold);
+    }
+
+    .ai-insight-icon.info {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--blue);
+    }
+
+    .ai-insight-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .ai-insight-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--txt);
+      font-family: 'Syne', sans-serif;
+    }
+
+    .ai-insight-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .ai-thinking {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+      gap: 1rem;
+    }
+
+    .brain-glow-wrap {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brain-glow-wrap i {
+      font-size: 1.8rem;
+      color: var(--gold);
+      z-index: 2;
+      animation: pulseBrain 2s infinite ease-in-out;
+    }
+
+    .brain-pulse-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--gold-glow);
+      border-radius: 50%;
+      animation: pulseRing 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    @keyframes pulseBrain {
+      0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px var(--gold));
+      }
+
+      50% {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 12px var(--gold));
+      }
+
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px var(--gold));
+      }
+    }
+
+    @keyframes pulseRing {
+      0% {
+        transform: scale(0.6);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.3);
+        opacity: 0;
+      }
+    }
+
+    .ai-thinking-text {
+      font-size: 0.8rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      animation: blinkText 1.5s infinite;
+    }
+
+    @keyframes blinkText {
+
+      0%,
+      100% {
+        opacity: 0.6;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <a href="index.html">Rental<span>Car</span> AI</a>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="adminAvatar">A</div>
+      <div>
+        <div class="user-name">System Administrator</div>
+        <div class="user-role" id="adminEmail">admin@rentalcar.ai</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-item-link active" onclick="switchTab('overview', this)"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a class="nav-item-link" href="analytics.html"><i class="fas fa-chart-line"></i>Reports & Analytics</a>
+
+      <div class="nav-section-label">Management</div>
+      <a class="nav-item-link" onclick="switchTab('cars', this)"><i class="fas fa-car"></i>Cars Directory</a>
+      <a class="nav-item-link" onclick="switchTab('bookings', this)"><i class="fas fa-calendar-alt"></i>Bookings Log</a>
+      <a class="nav-item-link" onclick="switchTab('users', this)"><i class="fas fa-users"></i>Users Database</a>
+
+      <div class="nav-section-label">AI Assistant</div>
+      <a class="nav-item-link" onclick="switchTab('recommendations', this)"><i class="fas fa-brain"></i>AI
+        Recommendations</a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <a href="dashboard.html" class="btn-back-portal">
+        <i class="fas fa-arrow-left"></i> User Portal
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===================== MAIN CONTENT WRAPPER ===================== -->
+  <div class="main-wrapper">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="top-bar-title" id="pageTitle">Admin Dashboard</h1>
+      </div>
+      <div class="top-bar-right">
+        <span class="admin-badge">Admin Mode</span>
+      </div>
+    </header>
+
+    <!-- Core Content Area -->
+    <main class="content-container">
+
+      <!-- ==================== TAB: OVERVIEW ==================== -->
+      <section id="tab-overview" class="dashboard-section active-tab">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Operations <span>Overview</span></h2>
+            <p class="section-desc">Key performance metrics and rental status parameters.</p>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-label">Total Fleet Size</span>
+              <span class="stat-val" id="statCars">0</span>
+            </div>
+            <div class="stat-icon-wrap blue"><i class="fas fa-car"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-label">Active Users</span>
+              <span class="stat-val" id="statUsers">0</span>
+            </div>
+            <div class="stat-icon-wrap gold"><i class="fas fa-users"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-label">Total Bookings</span>
+              <span class="stat-val" id="statBookings">0</span>
+            </div>
+            <div class="stat-icon-wrap green"><i class="fas fa-calendar-check"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-label">Available Fleet</span>
+              <span class="stat-val" id="statAvailable">0</span>
+            </div>
+            <div class="stat-icon-wrap red"><i class="fas fa-check-circle"></i></div>
+          </div>
+        </div>
+
+        <!-- Quick Links Card -->
+        <div class="panel-card" style="margin-top:1rem;">
+          <h3 class="modal-title" style="margin-bottom:1rem; font-size:1.05rem;">Quick Operations Panel</h3>
+          <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+            <button class="btn-action btn-gold" onclick="openCarModal()"><i class="fas fa-plus"></i> Add New
+              Car</button>
+            <button class="btn-action btn-outline"
+              onclick="switchTab('cars', document.querySelectorAll('.nav-item-link')[1])"><i class="fas fa-edit"></i>
+              Edit/Delete Cars</button>
+            <button class="btn-action btn-outline"
+              onclick="switchTab('bookings', document.querySelectorAll('.nav-item-link')[2])"><i
+                class="fas fa-list"></i> Review Bookings</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: CARS DIRECTORY ==================== -->
+      <section id="tab-cars" class="dashboard-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Manage <span>Fleet</span></h2>
+            <p class="section-desc">Add, edit, delete, and monitor vehicles in the RentalCar AI fleet.</p>
+          </div>
+          <button class="btn-action btn-gold" onclick="openCarModal()"><i class="fas fa-plus"></i> Add New Car</button>
+        </div>
+
+        <div class="panel-card">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Car ID</th>
+                  <th>Brand / Model</th>
+                  <th>Year</th>
+                  <th>Seats</th>
+                  <th>Fuel</th>
+                  <th>Price/Day</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="carsTableBody">
+                <tr>
+                  <td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">Fetching vehicle
+                    directory...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: BOOKINGS LOG ==================== -->
+      <section id="tab-bookings" class="dashboard-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Rental <span>Bookings</span> Log</h2>
+            <p class="section-desc">Manage ongoing rentals, complete reservations, and cancel requests.</p>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Client</th>
+                  <th>Vehicle Details</th>
+                  <th>Rent Span</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <tr>
+                  <td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Fetching booking
+                    transactions...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: USERS DATABASE ==================== -->
+      <section id="tab-users" class="dashboard-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Registered <span>Users</span> Database</h2>
+            <p class="section-desc">View profile records and contact information of all registered clients.</p>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Full Name</th>
+                  <th>Email Address</th>
+                  <th>Phone Number</th>
+                  <th>City Location</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center;color:var(--muted);padding:2rem;">Fetching registered user
+                    database...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: AI RECOMMENDATIONS ==================== -->
+      <section id="tab-recommendations" class="dashboard-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">AI Insights & <span>Recommendations</span></h2>
+            <p class="section-desc">Dynamic optimizations, fleet metrics, and automated intelligence summaries.</p>
+          </div>
+          <button class="btn-action btn-gold" onclick="triggerAIInsightsGeneration()"><i class="fas fa-sync-alt"></i>
+            Re-Generate Insights</button>
+        </div>
+
+        <!-- AI Metrics Grid -->
+        <div class="ai-recommendation-grid">
+          <!-- Most Booked Car -->
+          <div class="ai-rec-card">
+            <span class="ai-card-title">Most Booked Car</span>
+            <div class="ai-card-content">
+              <div class="ai-card-avatar"><i class="fas fa-crown"></i></div>
+              <div class="ai-card-details">
+                <span class="ai-card-value" id="aiMostBookedCar">—</span>
+                <span class="ai-card-subtitle" id="aiMostBookedCount">0 bookings</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Least Booked Car -->
+          <div class="ai-rec-card">
+            <span class="ai-card-title">Least Booked Car</span>
+            <div class="ai-card-content">
+              <div class="ai-card-avatar" style="color: var(--red);"><i class="fas fa-arrow-down"></i></div>
+              <div class="ai-card-details">
+                <span class="ai-card-value" id="aiLeastBookedCar">—</span>
+                <span class="ai-card-subtitle" id="aiLeastBookedCount">0 bookings</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Customer -->
+          <div class="ai-rec-card">
+            <span class="ai-card-title">Top Customer</span>
+            <div class="ai-card-content">
+              <div class="ai-card-avatar" style="color: var(--blue);"><i class="fas fa-user-check"></i></div>
+              <div class="ai-card-details">
+                <span class="ai-card-value" id="aiTopCustomer">—</span>
+                <span class="ai-card-subtitle" id="aiTopCustomerBookings">0 bookings</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Occupancy Percentage -->
+          <div class="ai-rec-card">
+            <span class="ai-card-title">Fleet Occupancy</span>
+            <div class="ai-card-content">
+              <div class="ai-card-avatar" style="color: var(--green);"><i class="fas fa-chart-pie"></i></div>
+              <div class="ai-card-details">
+                <span class="ai-card-value" id="aiOccupancyPercent">0%</span>
+                <span class="ai-card-subtitle" id="aiOccupancyRatio">0 / 0 cars booked</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-layout-split">
+          <!-- AI Insights Card -->
+          <div class="panel-card ai-insights-panel" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <h3 class="modal-title" style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-robot" style="color: var(--gold);"></i> AI Smart Insights
+              </h3>
+              <span class="admin-badge"
+                style="background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: var(--green);">Active
+                Analysis</span>
+            </div>
+
+            <div id="aiInsightsContainer">
+              <!-- Simulated loader or insights list will be injected here -->
+              <div class="ai-thinking">
+                <div class="brain-glow-wrap">
+                  <div class="brain-pulse-ring"></div>
+                  <i class="fas fa-brain"></i>
+                </div>
+                <span class="ai-thinking-text">AI is analyzing fleet metrics...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Trends Chart -->
+          <div class="panel-card" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <h3 class="modal-title" style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fas fa-chart-bar" style="color: var(--blue);"></i> Booking Trends
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--muted); margin-top: -0.6rem;">Distribution of booking check-ins
+              grouped by pickup date.</p>
+            <div class="trend-container"
+              style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+              <div class="chart-bar-container" id="trendsChartContainer">
+                <!-- Dynamically generated bars go here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===================== CAR ADD/EDIT MODAL OVERLAY ===================== -->
+  <div class="modal-overlay" id="carModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Add New Vehicle</h3>
+        <button class="modal-close" onclick="closeCarModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="carForm" onsubmit="handleCarFormSubmit(event)">
+        <div class="modal-body">
+
+          <!-- Hidden input for ID (Edit Mode) -->
+          <input type="hidden" id="carId" name="id">
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label class="form-label" for="brand">Brand</label>
+              <input type="text" id="brand" class="form-control" placeholder="e.g. BMW" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="model">Model</label>
+              <input type="text" id="model" class="form-control" placeholder="e.g. 3 Series" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pricePerDay">Price Per Day (₹)</label>
+              <input type="number" id="pricePerDay" class="form-control" placeholder="e.g. 6500" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="year">Year</label>
+              <input type="number" id="year" class="form-control" placeholder="e.g. 2025" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="seats">Seats</label>
+              <input type="number" id="seats" class="form-control" placeholder="e.g. 5" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fuelType">Fuel Type</label>
+              <select id="fuelType" class="form-control">
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Electric">Electric</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="transmission">Transmission</label>
+              <select id="transmission" class="form-control">
+                <option value="Automatic">Automatic</option>
+                <option value="Manual">Manual</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="status">Operational Status</label>
+              <select id="status" class="form-control">
+                <option value="Available">Available</option>
+                <option value="Booked">Booked</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rating">Rating (0.0 to 5.0)</label>
+              <input type="number" id="rating" step="0.1" min="0" max="5" class="form-control" placeholder="e.g. 4.8"
+                value="4.8">
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="imageUrl">Image URL</label>
+              <input type="text" id="imageUrl" class="form-control"
+                placeholder="e.g. https://images.unsplash.com/photo-..." required>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-action btn-outline" onclick="closeCarModal()">Cancel</button>
+          <button type="submit" class="btn-action btn-gold">Save Vehicle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===================== JAVASCRIPT LOGIC ===================== -->
+  <script>
+    const BACKEND_URL = "http://localhost:8080/api";
+
+    // Local state caches
+    let globalCars = [];
+    let globalUsers = [];
+    let globalBookings = [];
+
+    // Map caches for lookups
+    let userMap = {};
+    let carMap = {};
+
+    /**
+     * Handle Tab/Section switching
+     */
+    function switchTab(tabId, el) {
+      // Hide all sections
+      document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.remove('active-tab'));
+      // Deactivate all nav links
+      document.querySelectorAll('.nav-item-link').forEach(link => link.classList.remove('active'));
+
+      // Show target section
+      const targetSection = document.getElementById(`tab-${tabId}`);
+      if (targetSection) targetSection.classList.add('active-tab');
+
+      // Activate nav link
+      if (el) el.classList.add('active');
+
+      // Set Top bar header title
+      const titles = {
+        overview: "Admin Dashboard",
+        cars: "Cars Directory",
+        bookings: "Bookings Log",
+        users: "Users Database",
+        recommendations: "AI Recommendations & Insights"
+      };
+      document.getElementById('pageTitle').textContent = titles[tabId] || "Admin Panel";
+
+      // Close sidebar on mobile after clicking
+      document.getElementById('sidebar').classList.remove('open');
+
+      // Fetch updated data depending on target tab
+      refreshData();
+    }
+
+    /**
+     * Toast notifications
+     */
+    function showToast(message, color = "#22c55e") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.innerHTML = `<i class="fas fa-check-circle" style="color:${color};"></i>${message}`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    /**
+     * Main function to load all details from backend
+     */
+    async function refreshData() {
+      try {
+        // 1. Fetch Users
+        const resUsers = await fetch(`${BACKEND_URL}/users`);
+        globalUsers = await resUsers.json();
+        userMap = {};
+        globalUsers.forEach(u => userMap[u.id] = u);
+
+        // 2. Fetch Cars
+        const resCars = await fetch(`${BACKEND_URL}/cars`);
+        globalCars = await resCars.json();
+        carMap = {};
+        globalCars.forEach(c => carMap[c.id] = c);
+
+        // 3. Fetch Bookings
+        const resBookings = await fetch(`${BACKEND_URL}/bookings`);
+        globalBookings = await resBookings.json();
+
+        // Render components
+        renderStats();
+        renderCarsTable();
+        renderBookingsTable();
+        renderUsersTable();
+        renderRecommendations();
+      } catch (err) {
+        console.error("Error fetching admin API data:", err);
+        showToast("Error connecting to server backend", "#e84545");
+      }
+    }
+
+    /**
+     * Render Dashboard stats cards
+     */
+    function renderStats() {
+      document.getElementById('statCars').textContent = globalCars.length;
+      document.getElementById('statUsers').textContent = globalUsers.length;
+      document.getElementById('statBookings').textContent = globalBookings.length;
+
+      const availableCount = globalCars.filter(c => c.status === "Available").length;
+      document.getElementById('statAvailable').textContent = availableCount;
+    }
+
+    /**
+     * Render Cars list table
+     */
+    function renderCarsTable() {
+      const tbody = document.getElementById('carsTableBody');
+      if (!globalCars.length) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">No vehicles found in database.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = globalCars.map(c => `
+    <tr>
+      <td><img src="${c.imageUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'}" class="table-car-img" alt="car"></td>
+      <td><strong>#${c.id}</strong></td>
+      <td><strong>${c.brand}</strong> ${c.model}</td>
+      <td>${c.year || '—'}</td>
+      <td>${c.seats || '4'} seats</td>
+      <td>${c.fuelType || 'Petrol'}</td>
+      <td><strong>₹${(c.pricePerDay || 0).toLocaleString()}</strong></td>
+      <td><span class="badge ${c.status === 'Available' ? 'badge-available' : 'badge-booked'}">${c.status || 'Available'}</span></td>
+      <td>
+        <div class="action-row-btns">
+          <button class="btn-action btn-outline" style="padding: .35rem .6rem;" onclick="openCarModal(${c.id})"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn-action btn-cancel" style="padding: .35rem .6rem;" onclick="handleDeleteCar(${c.id})"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+    }
+
+    /**
+     * Render Bookings list table
+     */
+    function renderBookingsTable() {
+      const tbody = document.getElementById('bookingsTableBody');
+      if (!globalBookings.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No bookings logged.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = globalBookings.slice().reverse().map(b => {
+        // Resolve User
+        const user = userMap[b.userId] || { name: `User ID #${b.userId}`, email: "Unknown Email" };
+        // Resolve Car
+        const car = carMap[b.carId] || { brand: `Car ID #${b.carId}`, model: "" };
+
+        // Resolve Status Classes
+        let statusClass = "badge-booked";
+        if (b.bookingStatus === "Cancelled") statusClass = "badge-cancelled";
+        if (b.bookingStatus === "Completed") statusClass = "badge-completed";
+
+        // Show cancel and complete button only if booked/upcoming
+        let actionButtons = "";
+        if (b.bookingStatus !== "Cancelled" && b.bookingStatus !== "Completed") {
+          actionButtons = `
+        <button class="btn-action btn-complete" style="padding: .3rem .5rem;" onclick="handleCompleteBooking(${b.id})"><i class="fas fa-check"></i> Complete</button>
+        <button class="btn-action btn-cancel" style="padding: .3rem .5rem;" onclick="handleCancelBooking(${b.id})"><i class="fas fa-times"></i> Cancel</button>
+      `;
+        } else {
+          actionButtons = `<span style="font-size:0.75rem; color:var(--muted);">No actions pending</span>`;
+        }
+
+        return `
+      <tr>
+        <td><strong>#${b.id}</strong></td>
+        <td>
+          <div style="font-weight:600;">${user.name}</div>
+          <div style="font-size:0.7rem; color:var(--muted);">${user.email}</div>
+        </td>
+        <td>
+          <div style="font-weight:600;">${car.brand} ${car.model}</div>
+          <div style="font-size:0.7rem; color:var(--muted);">Car Ref ID: #${b.carId}</div>
+        </td>
+        <td>
+          <div style="font-size:0.78rem;"><strong>Pick:</strong> ${b.pickupDate}</div>
+          <div style="font-size:0.78rem;"><strong>Return:</strong> ${b.returnDate}</div>
+        </td>
+        <td><span class="badge ${statusClass}">${b.bookingStatus || 'Confirmed'}</span></td>
+        <td>
+          <div class="action-row-btns">
+            ${actionButtons}
+          </div>
+        </td>
+      </tr>
+    `;
+      }).join('');
+    }
+
+    /**
+     * Render Users table
+     */
+    function renderUsersTable() {
+      const tbody = document.getElementById('usersTableBody');
+      if (!globalUsers.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem;">No users registered.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = globalUsers.map(u => `
+    <tr>
+      <td><strong>#${u.id}</strong></td>
+      <td><strong>${u.name || 'Guest User'}</strong></td>
+      <td>${u.email || '—'}</td>
+      <td>${u.phone || '—'}</td>
+      <td>${u.city || '—'}</td>
+    </tr>
+  `).join('');
+    }
+
+    /**
+     * Open Car Modal (supports Add and Edit)
+     */
+    function openCarModal(carId = null) {
+      const modal = document.getElementById('carModal');
+      const form = document.getElementById('carForm');
+      const title = document.getElementById('modalTitle');
+      form.reset();
+
+      if (carId) {
+        title.textContent = `Edit Vehicle (ID: #${carId})`;
+        const car = carMap[carId];
+        if (car) {
+          document.getElementById('carId').value = car.id;
+          document.getElementById('brand').value = car.brand || "";
+          document.getElementById('model').value = car.model || "";
+          document.getElementById('pricePerDay').value = car.pricePerDay || "";
+          document.getElementById('year').value = car.year || "";
+          document.getElementById('seats').value = car.seats || "";
+          document.getElementById('fuelType').value = car.fuelType || "Petrol";
+          document.getElementById('transmission').value = car.transmission || "Automatic";
+          document.getElementById('status').value = car.status || "Available";
+          document.getElementById('rating').value = car.rating || "4.8";
+          document.getElementById('imageUrl').value = car.imageUrl || "";
+        }
+      } else {
+        title.textContent = "Add New Vehicle";
+        document.getElementById('carId').value = "";
+        document.getElementById('status').value = "Available";
+        document.getElementById('rating').value = "4.8";
+      }
+
+      modal.classList.add('active');
+    }
+
+    /**
+     * Close Car Modal
+     */
+    function closeCarModal() {
+      document.getElementById('carModal').classList.remove('active');
+    }
+
+    /**
+     * Form Submit handler (Add / Edit Car via POST)
+     */
+    async function handleCarFormSubmit(event) {
+      event.preventDefault();
+
+      const idValue = document.getElementById('carId').value;
+      const payload = {
+        brand: document.getElementById('brand').value.trim(),
+        model: document.getElementById('model').value.trim(),
+        pricePerDay: parseFloat(document.getElementById('pricePerDay').value),
+        year: parseInt(document.getElementById('year').value),
+        seats: parseInt(document.getElementById('seats').value),
+        fuelType: document.getElementById('fuelType').value,
+        transmission: document.getElementById('transmission').value,
+        status: document.getElementById('status').value,
+        rating: parseFloat(document.getElementById('rating').value),
+        imageUrl: document.getElementById('imageUrl').value.trim()
+      };
+
+      if (idValue) {
+        payload.id = parseInt(idValue);
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/cars`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          showToast(idValue ? "Vehicle modified successfully" : "New vehicle registered successfully");
+          closeCarModal();
+          refreshData();
+        } else {
+          showToast("Server returned error response", "#e84545");
+        }
+      } catch (err) {
+        console.error("Error submitting vehicle form:", err);
+        showToast("Connection to backend server failed", "#e84545");
+      }
+    }
+
+    /**
+     * Delete Vehicle API Trigger
+     */
+    async function handleDeleteCar(carId) {
+      if (!confirm(`Are you sure you want to delete Vehicle ID #${carId} from the fleet?`)) return;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/cars/${carId}`, {
+          method: "DELETE"
+        });
+
+        if (res.ok) {
+          showToast(`Vehicle ID #${carId} successfully removed`);
+          refreshData();
+        } else {
+          showToast("Error processing delete request", "#e84545");
+        }
+      } catch (err) {
+        console.error("Delete car error:", err);
+        showToast("Connection to server failed", "#e84545");
+      }
+    }
+
+    /**
+     * Complete Booking API Trigger
+     */
+    async function handleCompleteBooking(bookingId) {
+      if (!confirm(`Mark Booking ID #${bookingId} as Completed?`)) return;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/bookings/complete/${bookingId}`, {
+          method: "PUT"
+        });
+
+        if (res.ok) {
+          showToast(`Booking #${bookingId} marked as Completed`);
+          refreshData();
+        } else {
+          showToast("Error updating booking status", "#e84545");
+        }
+      } catch (err) {
+        console.error("Complete booking error:", err);
+        showToast("Connection to server failed", "#e84545");
+      }
+    }
+
+    /**
+     * Cancel Booking API Trigger
+     */
+    async function handleCancelBooking(bookingId) {
+      if (!confirm(`Cancel Booking ID #${bookingId}?`)) return;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/bookings/cancel/${bookingId}`, {
+          method: "PUT"
+        });
+
+        if (res.ok) {
+          showToast(`Booking #${bookingId} successfully Cancelled`);
+          refreshData();
+        } else {
+          showToast("Error cancelling booking reservation", "#e84545");
+        }
+      } catch (err) {
+        console.error("Cancel booking error:", err);
+        showToast("Connection to server failed", "#e84545");
+      }
+    }
+
+
+    /**
+     * Render AI Recommendations & Insights tab data
+     */
+    function renderRecommendations() {
+      if (!globalCars.length && !globalBookings.length) {
+        return;
+      }
+
+      // 1. Calculate Most Booked Car
+      const bookingCountsByCar = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingCountsByCar[b.carId] = (bookingCountsByCar[b.carId] || 0) + 1;
+        }
+      });
+
+      let mostBookedCarId = null;
+      let maxBookings = -1;
+      Object.keys(bookingCountsByCar).forEach(cid => {
+        if (bookingCountsByCar[cid] > maxBookings) {
+          maxBookings = bookingCountsByCar[cid];
+          mostBookedCarId = cid;
+        }
+      });
+
+      const mostBookedEl = document.getElementById('aiMostBookedCar');
+      const mostBookedCountEl = document.getElementById('aiMostBookedCount');
+      if (mostBookedCarId && carMap[mostBookedCarId]) {
+        const car = carMap[mostBookedCarId];
+        mostBookedEl.textContent = `${car.brand} ${car.model}`;
+        mostBookedCountEl.textContent = `${maxBookings} rentals completed/active`;
+      } else {
+        mostBookedEl.textContent = "No Data";
+        mostBookedCountEl.textContent = "0 rentals registered";
+      }
+
+      // 2. Calculate Least Booked Car
+      let leastBookedCarId = null;
+      let minBookings = Infinity;
+      if (globalCars.length > 0) {
+        globalCars.forEach(car => {
+          const count = bookingCountsByCar[car.id] || 0;
+          if (count < minBookings) {
+            minBookings = count;
+            leastBookedCarId = car.id;
+          }
+        });
+      }
+
+      const leastBookedEl = document.getElementById('aiLeastBookedCar');
+      const leastBookedCountEl = document.getElementById('aiLeastBookedCount');
+      if (leastBookedCarId && carMap[leastBookedCarId]) {
+        const car = carMap[leastBookedCarId];
+        leastBookedEl.textContent = `${car.brand} ${car.model}`;
+        leastBookedCountEl.textContent = `${minBookings} rentals registered`;
+      } else {
+        leastBookedEl.textContent = "No Data";
+        leastBookedCountEl.textContent = "0 rentals registered";
+      }
+
+      // 3. Calculate Top Customer
+      const bookingCountsByUser = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingCountsByUser[b.userId] = (bookingCountsByUser[b.userId] || 0) + 1;
+        }
+      });
+
+      let topUserId = null;
+      let maxUserBookings = -1;
+      Object.keys(bookingCountsByUser).forEach(uid => {
+        if (bookingCountsByUser[uid] > maxUserBookings) {
+          maxUserBookings = bookingCountsByUser[uid];
+          topUserId = uid;
+        }
+      });
+
+      const topCustEl = document.getElementById('aiTopCustomer');
+      const topCustBookingsEl = document.getElementById('aiTopCustomerBookings');
+      if (topUserId && userMap[topUserId]) {
+        const user = userMap[topUserId];
+        topCustEl.textContent = user.name || `User #${user.id}`;
+        topCustBookingsEl.textContent = `${maxUserBookings} rentals • ${user.email || 'No email'}`;
+      } else {
+        topCustEl.textContent = "No Data";
+        topCustBookingsEl.textContent = "0 rentals registered";
+      }
+
+      // 4. Calculate Fleet Occupancy
+      const totalCarsCount = globalCars.length;
+      const bookedCarsCount = globalCars.filter(c => c.status === "Booked").length;
+      const occupancyPercent = totalCarsCount > 0 ? Math.round((bookedCarsCount / totalCarsCount) * 100) : 0;
+
+      document.getElementById('aiOccupancyPercent').textContent = `${occupancyPercent}%`;
+      document.getElementById('aiOccupancyRatio').textContent = `${bookedCarsCount} of ${totalCarsCount} fleet booked`;
+
+      // 5. Render Booking Trends Graph
+      const trendCounts = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled' && b.pickupDate) {
+          const dateStr = b.pickupDate.trim();
+          trendCounts[dateStr] = (trendCounts[dateStr] || 0) + 1;
+        }
+      });
+
+      const sortedDates = Object.keys(trendCounts).sort().slice(-6); // Take the last 6 days/dates with activity
+      const trendsChartContainer = document.getElementById('trendsChartContainer');
+
+      if (sortedDates.length === 0) {
+        trendsChartContainer.innerHTML = `<div style="text-align:center;width:100%;color:var(--muted);font-size:0.8rem;padding:2rem 0;">No active booking trends found.</div>`;
+      } else {
+        const maxTrendVal = Math.max(...sortedDates.map(d => trendCounts[d]));
+        trendsChartContainer.innerHTML = sortedDates.map(date => {
+          const val = trendCounts[date];
+          let displayLabel = date;
+          try {
+            const parts = date.split('-');
+            if (parts.length === 3) {
+              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              const day = parseInt(parts[2]);
+              const monthIdx = parseInt(parts[1]) - 1;
+              if (monthIdx >= 0 && monthIdx < 12) {
+                displayLabel = `${day} ${months[monthIdx]}`;
+              }
+            }
+          } catch (e) { }
+
+          const heightPercent = maxTrendVal > 0 ? (val / maxTrendVal) * 80 + 10 : 10;
+          return `
+        <div class="chart-bar-wrapper">
+          <div class="chart-bar" style="height: ${heightPercent}%;" title="${val} bookings on ${date}">
+            <span class="chart-bar-value">${val}</span>
+          </div>
+          <span class="chart-label" title="${date}">${displayLabel}</span>
+        </div>
+      `;
+        }).join('');
+      }
+
+      // 6. Generate Insights (only if no active thinking animation)
+      const insightsContainer = document.getElementById('aiInsightsContainer');
+      if (!insightsContainer.querySelector('.ai-thinking') || isFirstLoad) {
+        generateAndDisplayInsights();
+        isFirstLoad = false;
+      }
+    }
+
+    let isGeneratingInsights = false;
+    let isFirstLoad = true;
+
+    /**
+     * Trigger AI Insights generation animation
+     */
+    async function triggerAIInsightsGeneration() {
+      if (isGeneratingInsights) return;
+      isGeneratingInsights = true;
+
+      const container = document.getElementById('aiInsightsContainer');
+      container.innerHTML = `
+    <div class="ai-thinking">
+      <div class="brain-glow-wrap">
+        <div class="brain-pulse-ring"></div>
+        <i class="fas fa-brain"></i>
+      </div>
+      <span class="ai-thinking-text">AI is compiling performance vectors...</span>
+    </div>
+  `;
+
+      // Wait 1.5s to simulate calculation delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      generateAndDisplayInsights();
+      isGeneratingInsights = false;
+      showToast("Insights updated with fresh fleet telemetry!");
+    }
+
+    /**
+     * Generate and display natural language recommendations from live data
+     */
+    function generateAndDisplayInsights() {
+      const bookingCountsByCar = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingCountsByCar[b.carId] = (bookingCountsByCar[b.carId] || 0) + 1;
+        }
+      });
+
+      let mostBookedCarId = null;
+      let maxBookings = 0;
+      Object.keys(bookingCountsByCar).forEach(cid => {
+        if (bookingCountsByCar[cid] > maxBookings) {
+          maxBookings = bookingCountsByCar[cid];
+          mostBookedCarId = cid;
+        }
+      });
+
+      let leastBookedCarId = null;
+      let minBookings = Infinity;
+      if (globalCars.length > 0) {
+        globalCars.forEach(car => {
+          const count = bookingCountsByCar[car.id] || 0;
+          if (count < minBookings) {
+            minBookings = count;
+            leastBookedCarId = car.id;
+          }
+        });
+      }
+
+      const bookingCountsByUser = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingCountsByUser[b.userId] = (bookingCountsByUser[b.userId] || 0) + 1;
+        }
+      });
+
+      let topUserId = null;
+      let maxUserBookings = 0;
+      Object.keys(bookingCountsByUser).forEach(uid => {
+        if (bookingCountsByUser[uid] > maxUserBookings) {
+          maxUserBookings = bookingCountsByUser[uid];
+          topUserId = uid;
+        }
+      });
+
+      const totalCarsCount = globalCars.length;
+      const bookedCarsCount = globalCars.filter(c => c.status === "Booked").length;
+      const occupancyPercent = totalCarsCount > 0 ? Math.round((bookedCarsCount / totalCarsCount) * 100) : 0;
+
+      const insights = [];
+
+      // Insight 1: Fleet Occupancy
+      if (occupancyPercent >= 70) {
+        insights.push({
+          type: "danger",
+          icon: "fa-exclamation-triangle",
+          title: "Fleet Shortage Warning",
+          desc: `Occupancy is currently at a high of ${occupancyPercent}% (${bookedCarsCount}/${totalCarsCount} vehicles active). We recommend acquiring more high-demand cars or raising prices slightly to capitalize on high traffic.`
+        });
+      } else if (occupancyPercent <= 30 && totalCarsCount > 0) {
+        insights.push({
+          type: "warning",
+          icon: "fa-tag",
+          title: "Low Fleet Utilization",
+          desc: `Occupancy is low at ${occupancyPercent}% (${bookedCarsCount}/${totalCarsCount} active). Action item: Launch a dynamic discount campaign (e.g., 15% off weekday bookings) to optimize fleet utilization.`
+        });
+      } else {
+        insights.push({
+          type: "success",
+          icon: "fa-check-circle",
+          title: "Optimal Fleet Occupancy",
+          desc: `Your fleet occupancy is in a healthy range of ${occupancyPercent}% (${bookedCarsCount}/${totalCarsCount} active). Maintain current operations and standard seasonal pricing structures.`
+        });
+      }
+
+      // Insight 2: Most Booked Car
+      if (mostBookedCarId && carMap[mostBookedCarId]) {
+        const car = carMap[mostBookedCarId];
+        insights.push({
+          type: "info",
+          icon: "fa-crown",
+          title: "High Demand Asset",
+          desc: `The <strong>${car.brand} ${car.model}</strong> is your top-performing vehicle with ${maxBookings} rentals. Consider expanding inventory for this segment or applying peak-hour dynamic surcharges.`
+        });
+      }
+
+      // Insight 3: Least Booked Car
+      if (leastBookedCarId && carMap[leastBookedCarId] && leastBookedCarId !== mostBookedCarId) {
+        const car = carMap[leastBookedCarId];
+        insights.push({
+          type: "warning",
+          icon: "fa-arrow-down",
+          title: "Underperforming Asset",
+          desc: `The <strong>${car.brand} ${car.model}</strong> has the lowest activity with ${minBookings} rentals. Consider running targeted marketing promotions or reducing its daily rental rate by 10-15%.`
+        });
+      }
+
+      // Insight 4: Customer Loyalty
+      if (topUserId && userMap[topUserId]) {
+        const user = userMap[topUserId];
+        insights.push({
+          type: "success",
+          icon: "fa-user-check",
+          title: "VIP Loyalty Retention",
+          desc: `Customer <strong>${user.name || 'Guest User'}</strong> has booked ${maxUserBookings} rentals. Dispatch an automated loyalty thank-you bonus coupon to secure their lifetime value.`
+        });
+      }
+
+      if (insights.length === 0) {
+        insights.push({
+          type: "info",
+          icon: "fa-info-circle",
+          title: "Generating Insights",
+          desc: "Additional customer check-ins and fleet registrations are needed to compile deeper analytics vectors."
+        });
+      }
+
+      const container = document.getElementById('aiInsightsContainer');
+      container.innerHTML = insights.map(ins => `
+    <div class="ai-insight-item">
+      <div class="ai-insight-icon ${ins.type}">
+        <i class="fas ${ins.icon}"></i>
+      </div>
+      <div class="ai-insight-text">
+        <span class="ai-insight-title">${ins.title}</span>
+        <span class="ai-insight-desc">${ins.desc}</span>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    // Initialise Application
+    document.addEventListener("DOMContentLoaded", async () => {
+      await refreshData();
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam) {
+        const links = document.querySelectorAll('.nav-item-link');
+        let matchedLink = null;
+        links.forEach(link => {
+          const attr = link.getAttribute('onclick') || '';
+          if (attr.includes(`'${tabParam}'`) || attr.includes(`"${tabParam}"`)) {
+            matchedLink = link;
+          }
+        });
+        if (matchedLink) {
+          switchTab(tabParam, matchedLink);
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>

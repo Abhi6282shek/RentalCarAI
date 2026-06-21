@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookings — RentalCar AI</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080c14;
+      --bg2: #0d1421;
+      --bg3: #111827;
+      --card: rgba(255, 255, 255, 0.04);
+      --glass: rgba(255, 255, 255, 0.08);
+      --gold: #c8a84b;
+      --gold-dim: rgba(200, 168, 75, 0.15);
+      --gold-glow: rgba(200, 168, 75, 0.3);
+      --txt: #f0f0f0;
+      --muted: #7a8499;
+      --dim: #4a5568;
+      --green: #22c55e;
+      --red: #e84545;
+      --blue: #3b82f6;
+      --orange: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: var(--bg2);
+      border-right: 1px solid var(--glass);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform .3s;
+    }
+
+    .sb-brand {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--glass);
+    }
+
+    .sb-brand a {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--txt);
+      text-decoration: none;
+    }
+
+    .sb-brand span {
+      color: var(--gold);
+    }
+
+    .sb-user {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--glass);
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .sb-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .85rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .sb-name {
+      font-size: .83rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .sb-role {
+      font-size: .68rem;
+      color: var(--muted);
+    }
+
+    .sb-nav {
+      flex: 1;
+      padding: .8rem 0;
+      overflow-y: auto;
+    }
+
+    .sb-section {
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--dim);
+      padding: .4rem 1.5rem;
+      font-weight: 600;
+      margin-top: .4rem;
+    }
+
+    .sb-link {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .72rem 1.5rem;
+      font-size: .82rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all .2s;
+      border-left: 3px solid transparent;
+    }
+
+    .sb-link:hover {
+      color: var(--txt);
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .sb-link.active {
+      color: var(--gold);
+      background: var(--gold-dim);
+      border-left-color: var(--gold);
+    }
+
+    .sb-link i {
+      width: 15px;
+      text-align: center;
+      font-size: .82rem;
+    }
+
+    .sb-bottom {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--glass);
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      color: var(--muted);
+      font-size: .82rem;
+      padding: .55rem .75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .2s;
+      background: none;
+      border: none;
+      width: 100%;
+    }
+
+    .btn-logout:hover {
+      color: var(--red);
+      background: rgba(232, 69, 69, .07);
+    }
+
+    .btn-invoice {
+      background: #3b82f6;
+      color: white;
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: 240px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: rgba(8, 12, 20, .9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .pg-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .tb-right {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+      font-size: .82rem;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    /* STATS ROW */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: 14px;
+      padding: 1.3rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all .2s;
+    }
+
+    .stat-box:hover {
+      border-color: rgba(200, 168, 75, .18);
+      transform: translateY(-2px);
+    }
+
+    .stat-ico {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .ico-gold {
+      background: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .ico-green {
+      background: rgba(34, 197, 94, .1);
+      color: var(--green);
+    }
+
+    .ico-orange {
+      background: rgba(245, 158, 11, .1);
+      color: var(--orange);
+    }
+
+    .ico-red {
+      background: rgba(232, 69, 69, .1);
+      color: var(--red);
+    }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: .2rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    /* FILTER TABS */
+    .filter-tabs {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .ftab {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: .4rem 1.1rem;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .ftab:hover {
+      border-color: rgba(200, 168, 75, .25);
+      color: var(--txt);
+    }
+
+    .ftab.active {
+      background: var(--gold-dim);
+      border-color: rgba(200, 168, 75, .35);
+      color: var(--gold);
+    }
+
+    .ftab .cnt {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 10px;
+      padding: .08rem .45rem;
+      font-size: .68rem;
+    }
+
+    .ftab.active .cnt {
+      background: rgba(200, 168, 75, .2);
+    }
+
+    .search-wrap {
+      margin-left: auto;
+      position: relative;
+    }
+
+    .bsearch {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--glass);
+      color: var(--txt);
+      border-radius: 8px;
+      padding: .4rem 1rem .4rem 2.4rem;
+      font-size: .8rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all .3s;
+      width: 220px;
+    }
+
+    .bsearch:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+
+    .bsearch::placeholder {
+      color: var(--dim);
+    }
+
+    .bsearch-icon {
+      position: absolute;
+      left: .7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    /* BOOKING CARD */
+    .booking-card {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      transition: all .3s;
+    }
+
+    .booking-card:hover {
+      border-color: rgba(200, 168, 75, .18);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+    }
+
+    .bc-img {
+      width: 200px;
+      min-width: 200px;
+      height: 150px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg3);
+    }
+
+    .bc-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s;
+    }
+
+    .booking-card:hover .bc-img img {
+      transform: scale(1.05);
+    }
+
+    .bc-status {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: .62rem;
+      font-weight: 700;
+      padding: .22rem .65rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .s-upcoming {
+      background: rgba(200, 168, 75, .2);
+      color: var(--gold);
+      border: 1px solid rgba(200, 168, 75, .3);
+    }
+
+    .s-active {
+      background: rgba(34, 197, 94, .18);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, .3);
+    }
+
+    .s-completed {
+      background: rgba(59, 130, 246, .15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, .3);
+    }
+
+    .s-cancelled {
+      background: rgba(232, 69, 69, .12);
+      color: var(--red);
+      border: 1px solid rgba(232, 69, 69, .25);
+    }
+
+    .bc-body {
+      flex: 1;
+      padding: 1.3rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .bc-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .bc-car-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: .2rem;
+    }
+
+    .bc-car-type {
+      font-size: .72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: .8rem;
+    }
+
+    .bc-meta {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: .9rem;
+    }
+
+    .bc-meta-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    .bc-meta-item i {
+      color: var(--gold);
+      font-size: .72rem;
+    }
+
+    .bc-meta-item strong {
+      color: var(--txt);
+      font-weight: 600;
+    }
+
+    .bc-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .7rem;
+    }
+
+    .bc-ref {
+      font-size: .7rem;
+      color: var(--dim);
+    }
+
+    .bc-ref span {
+      color: var(--muted);
+    }
+
+    .bc-amount {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .bc-actions {
+      display: flex;
+      gap: .5rem;
+    }
+
+    .btn-action {
+      font-size: .78rem;
+      padding: .42rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .2s;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    .btn-view {
+      background: transparent;
+      border: 1px solid var(--glass) !important;
+      color: var(--txt);
+      border: none;
+    }
+
+    .btn-view:hover {
+      border-color: rgba(200, 168, 75, .3) !important;
+      color: var(--gold);
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid rgba(232, 69, 69, .25) !important;
+      color: var(--red);
+      border: none;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(232, 69, 69, .08);
+    }
+
+    .btn-rebook {
+      background: var(--gold);
+      color: #000;
+      border: none;
+    }
+
+    .btn-rebook:hover {
+      background: #e0b84f;
+    }
+
+    .btn-review {
+      background: rgba(59, 130, 246, .15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, .2) !important;
+      border: none;
+    }
+
+    .btn-review:hover {
+      background: rgba(59, 130, 246, .25);
+    }
+
+    /* TIMELINE (upcoming) */
+    .timeline-bar {
+      height: 4px;
+      background: var(--glass);
+      border-radius: 2px;
+      margin-top: .7rem;
+      overflow: hidden;
+    }
+
+    .timeline-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #e0b84f);
+      border-radius: 2px;
+      transition: width .5s;
+    }
+
+    /* EMPTY */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1.2rem;
+      opacity: .25;
+      display: block;
+    }
+
+    .empty-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      color: var(--txt);
+    }
+
+    .empty-sub {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-browse {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: .75rem 2rem;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all .2s;
+    }
+
+    .btn-browse:hover {
+      background: #e0b84f;
+      color: #000;
+      transform: translateY(-2px);
+    }
+
+    /* CANCEL MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(8px);
+      z-index: 900;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg2);
+      border: 1px solid var(--glass);
+      border-radius: 20px;
+      padding: 2.2rem;
+      max-width: 400px;
+      width: 90%;
+      animation: pop .3s ease;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(.88);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .m-icon-warn {
+      width: 60px;
+      height: 60px;
+      background: rgba(232, 69, 69, .1);
+      border: 2px solid var(--red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--red);
+      margin: 0 auto 1.2rem;
+    }
+
+    .m-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: .4rem;
+    }
+
+    .m-sub {
+      font-size: .83rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 1.6rem;
+    }
+
+    .m-booking-info {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--glass);
+      border-radius: 10px;
+      padding: .9rem 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .m-booking-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: .8rem;
+      margin-bottom: .35rem;
+      color: var(--muted);
+    }
+
+    .m-booking-row:last-child {
+      margin: 0;
+    }
+
+    .m-booking-row span:last-child {
+      color: var(--txt);
+      font-weight: 600;
+    }
+
+    .m-btn-row {
+      display: flex;
+      gap: .6rem;
+    }
+
+    .btn-m-confirm {
+      flex: 1;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: .82rem;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-m-confirm:hover {
+      background: #c53030;
+    }
+
+    .btn-m-back {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--glass);
+      color: var(--txt);
+      padding: .82rem;
+      border-radius: 10px;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-m-back:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* REVIEW MODAL */
+    .modal-box-review {
+      background: var(--bg2);
+      border: 1px solid var(--glass);
+      border-radius: 20px;
+      padding: 2.2rem;
+      max-width: 440px;
+      width: 90%;
+      animation: pop .3s ease;
+    }
+
+    .star-picker {
+      display: flex;
+      gap: .5rem;
+      font-size: 1.8rem;
+      cursor: pointer;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .star-picker span {
+      transition: all .2s;
+      color: var(--dim);
+    }
+
+    .star-picker span.lit {
+      color: var(--gold);
+    }
+
+    .star-picker span:hover {
+      transform: scale(1.2);
+    }
+
+    .review-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--glass);
+      color: var(--txt);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+      font-size: .87rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      resize: vertical;
+      min-height: 100px;
+      transition: all .3s;
+    }
+
+    .review-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+
+    .btn-submit-review {
+      width: 100%;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: .85rem;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background .2s;
+    }
+
+    .btn-submit-review:hover {
+      background: #e0b84f;
+    }
+
+    /* TOAST */
+    .tc {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 9999;
+    }
+
+    .tm {
+      background: rgba(8, 12, 20, .95);
+      border: 1px solid var(--glass);
+      backdrop-filter: blur(20px);
+      border-radius: 10px;
+      padding: .85rem 1.2rem;
+      font-size: .83rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      animation: si .3s ease;
+      min-width: 240px;
+      margin-bottom: .4rem;
+    }
+
+    @keyframes si {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media(max-width:992px) {
+      .stat-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .topbar {
+        padding: 1rem;
+      }
+
+      .bc-img {
+        width: 100%;
+        min-width: unset;
+        height: 160px;
+      }
+
+      .booking-card {
+        flex-direction: column !important;
+      }
+
+      .stat-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .search-wrap {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .bsearch {
+        width: 100%;
+      }
+
+      .filter-tabs {
+        gap: .3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-brand"><a href="index.html">Rental<span>Car</span> <span
+          style="color:var(--muted);font-size:.68rem;vertical-align:middle;">AI</span></a></div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">R</div>
+      <div>
+        <div class="sb-name" id="sbName">Loading…</div>
+        <div class="sb-role">Member</div>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Main</div>
+      <a class="sb-link" href="dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a class="sb-link" href="cars.html"><i class="fas fa-car"></i>Browse Cars</a>
+      <a class="sb-link active" href="my-bookings.html"><i class="fas fa-calendar-alt"></i>My Bookings</a>
+      <div class="sb-section">Tools</div>
+      <a class="sb-link" href="ai-recommendation.html"><i class="fas fa-robot"></i>AI Recommender</a>
+      <a class="sb-link" href="#"><i class="fas fa-bell"></i>Notifications</a>
+      <div class="sb-section">Support</div>
+    <a class="sb-link" href="about.html"><i class="fas fa-info-circle"></i>About Us</a>
+    <a class="sb-link" href="contact.html"><i class="fas fa-envelope"></i>Contact Us</a>
+    <div class="sb-section">Account</div>
+      <a class="sb-link" href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+      <a class="sb-link" href="admin.html"><i class="fas fa-user-shield"></i>Admin Panel</a>
+      <a class="sb-link" href="#"><i class="fas fa-cog"></i>Settings</a>
+    </div>
+    <div class="sb-bottom">
+      <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="icon-btn d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+            class="fas fa-bars"></i></button>
+        <div class="pg-title">My Bookings</div>
+      </div>
+      <div class="tb-right">
+        <a href="cars.html"
+          style="background:var(--gold);color:#000;border:none;padding:.4rem 1.1rem;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:background .2s;"
+          onmouseover="this.style.background='#e0b84f'" onmouseout="this.style.background='var(--gold)'"><i
+            class="fas fa-plus"></i>New Booking</a>
+        <div class="sb-avatar" id="topAvatar" style="cursor:pointer;">R</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STATS -->
+      <div class="stat-row" id="statsRow"></div>
+
+      <!-- FILTER TABS + SEARCH -->
+      <div class="filter-tabs" id="filterTabs">
+        <button class="ftab active" onclick="setFilter('all',this)"><i class="fas fa-list"></i>All <span class="cnt"
+            id="cntAll">0</span></button>
+        <button class="ftab" onclick="setFilter('upcoming',this)"><i class="fas fa-clock"
+            style="color:var(--gold);"></i>Upcoming <span class="cnt" id="cntUpcoming">0</span></button>
+        <button class="ftab" onclick="setFilter('active',this)"><i class="fas fa-circle"
+            style="color:var(--green);font-size:.5rem;"></i>Active <span class="cnt" id="cntActive">0</span></button>
+        <button class="ftab" onclick="setFilter('completed',this)"><i class="fas fa-check-circle"
+            style="color:#60a5fa;"></i>Completed <span class="cnt" id="cntCompleted">0</span></button>
+        <button class="ftab" onclick="setFilter('cancelled',this)"><i class="fas fa-times-circle"
+            style="color:var(--red);"></i>Cancelled <span class="cnt" id="cntCancelled">0</span></button>
+        <div class="search-wrap">
+          <i class="fas fa-search bsearch-icon"></i>
+          <input type="text" class="bsearch" id="bsearch" placeholder="Search bookings…" oninput="renderBookings()" />
+        </div>
+      </div>
+
+      <!-- BOOKINGS LIST -->
+      <div id="bookingsList"></div>
+
+    </div>
+  </div>
+
+  <!-- CANCEL MODAL -->
+  <div class="modal-overlay" id="cancelModal">
+    <div class="modal-box">
+      <div class="m-icon-warn"><i class="fas fa-exclamation-triangle"></i></div>
+      <div class="m-title">Cancel Booking?</div>
+      <div class="m-sub">This action cannot be undone. A full refund will be issued within 3 business days.</div>
+      <div class="m-booking-info" id="cancelInfo"></div>
+      <div class="m-btn-row">
+        <button class="btn-m-back" onclick="closeCancelModal()">Keep Booking</button>
+        <button class="btn-m-confirm" onclick="confirmCancel()">Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW MODAL -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-box-review">
+      <div class="m-title" style="text-align:center;margin-bottom:.3rem;">Leave a Review</div>
+      <div style="text-align:center;font-size:.83rem;color:var(--muted);margin-bottom:.8rem;" id="reviewCarName">—</div>
+      <div class="star-picker" id="starPicker">
+        <span onclick="setStar(1)" data-s="1">★</span>
+        <span onclick="setStar(2)" data-s="2">★</span>
+        <span onclick="setStar(3)" data-s="3">★</span>
+        <span onclick="setStar(4)" data-s="4">★</span>
+        <span onclick="setStar(5)" data-s="5">★</span>
+      </div>
+      <textarea class="review-textarea" id="reviewText" placeholder="How was your experience with this car?"></textarea>
+      <button class="btn-submit-review" onclick="submitReview()">Submit Review</button>
+      <button
+        style="width:100%;background:transparent;border:none;color:var(--muted);font-size:.8rem;margin-top:.6rem;cursor:pointer;padding:.4rem;"
+        onclick="closeReviewModal()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="tc" id="tc"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const CAR_IMGS = {
+      1: "images/cars/bmw-1.png",
+      2: "images/cars/Tesla-1.png",
+      3: "images/cars/Mercedes C-Class-1.png",
+      4: "images/cars/Porsche 911-1.png",
+      5: "images/cars/Toyota Camry Hybrid-1.png",
+      6: "images/cars/Audi A4-1.png"
+    };
+
+    const SEED_BOOKINGS = [
+      { id: 'RC230101', icon: '🚗', car: 'BMW 3 Series', type: 'Luxury Sedan', carId: 1, pickDate: '2025-01-10', returnDate: '2025-01-13', days: 3, amount: '₹22,230', status: 'completed', bookedOn: '2025-01-08T10:00:00Z' },
+      { id: 'RC230202', icon: '⚡', car: 'Tesla Model 3', type: 'Electric Sedan', carId: 2, pickDate: '2025-02-14', returnDate: '2025-02-16', days: 2, amount: '₹20,956', status: 'completed', bookedOn: '2025-02-12T14:30:00Z' },
+      { id: 'RC230303', icon: '🚙', car: 'Toyota Fortuner', type: 'Premium SUV', carId: 3, pickDate: '2025-03-05', returnDate: '2025-03-08', days: 3, amount: '₹16,992', status: 'completed', bookedOn: '2025-03-03T09:00:00Z' },
+      { id: 'RC230404', icon: '🚘', car: 'Hyundai i20', type: 'Hatchback', carId: 4, pickDate: '2025-04-20', returnDate: '2025-04-21', days: 1, amount: '₹1,533', status: 'cancelled', bookedOn: '2025-04-18T11:00:00Z' },
+    ];
+
+    let allBookings = [];
+    let currentFilter = 'all';
+    let cancelTarget = null;
+    let reviewTarget = null;
+    let starRating = 0;
+
+    function toast(msg, col = '#22c55e') {
+      const c = document.getElementById('tc'), t = document.createElement('div');
+      t.className = 'tm'; t.innerHTML = `<i class="fas fa-info-circle" style="color:${col};"></i>${msg}`;
+      c.appendChild(t); setTimeout(() => t.remove(), 3200);
+    }
+
+    function logout() { if (confirm('Sign out?')) { localStorage.removeItem('rcai_user'); window.location.href = 'login.html'; } }
+
+    function loadUser() {
+      const u = JSON.parse(localStorage.getItem('rcai_user') || '{"name":"Driver","email":"driver@rentalcar.ai"}');
+      const first = (u.name || 'Driver').split(' ')[0];
+      const init = first[0].toUpperCase();
+      document.getElementById('sbName').textContent = u.name || 'Driver';
+      ['sbAvatar', 'topAvatar'].forEach(id => document.getElementById(id).textContent = init);
+    }
+
+    const CAR_NAMES = {
+      1: "BMW 3 Series",
+      2: "Tesla Model 3",
+      3: "Toyota Fortuner",
+      4: "Hyundai i20",
+      5: "Mahindra Thar",
+      6: "Honda City",
+      7: "Kia Seltos",
+      8: "Hyundai Creta",
+      10: "Mercedes C-Class",
+      11: "Audi A4",
+      12: "Toyota Innova"
+    };
+    const CAR_PRICES = {
+      1: "₹5000",
+      2: "₹6000",
+      3: "₹7000",
+      4: "₹10000",
+      5: "₹4500",
+      6: "₹8000"
+    };
+    function loadBookings() {
+
+      console.log("loadBookings started");
+
+      const user = JSON.parse(localStorage.getItem("rcai_user"));
+
+      if (!user) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const userId = user.id;
+
+      // Fetch all cars from DB to get the correct details dynamically
+      fetch("http://localhost:8080/api/cars")
+        .then(res => res.json())
+        .then(carsData => {
+          const dbCarNames = {};
+          const dbCarPrices = {};
+          const dbCarImgs = {};
+          carsData.forEach(c => {
+            dbCarNames[c.id] = c.brand + " " + c.model;
+            dbCarPrices[c.id] = "₹" + Math.round(c.pricePerDay);
+            dbCarImgs[c.id] = c.imageUrl;
+          });
+
+          // Fetch bookings for user
+          return fetch(`http://localhost:8080/api/bookings/user/${userId}`)
+            .then(res => {
+              console.log("Response status:", res.status);
+              return res.json();
+            })
+            .then(data => {
+              console.log("Bookings from API:", data);
+              allBookings = data.map(b => ({
+                id: b.id,
+                car: dbCarNames[b.carId] || CAR_NAMES[b.carId] || ("Car ID " + b.carId),
+                type: "Car Rental",
+                carId: b.carId,
+                img: dbCarImgs[b.carId] || CAR_IMGS[b.carId] || "images/cars/bmw-1.png",
+                pickupDate: b.pickupDate,
+                returnDate: b.returnDate,
+                days: Math.ceil(
+                  (new Date(b.returnDate) - new Date(b.pickupDate))
+                  / (1000 * 60 * 60 * 24)
+                ),
+                amount: dbCarPrices[b.carId] || CAR_PRICES[b.carId] || "₹5000",
+                bookedOn: b.bookedOn,
+                status:
+                  b.bookingStatus === "Booked" ? "upcoming" :
+                    b.bookingStatus === "Completed" ? "completed" :
+                      b.bookingStatus === "Cancelled" ? "cancelled" :
+                        "upcoming"
+              }));
+
+              console.log("allBookings:", allBookings);
+
+              updateCounts();
+              renderStats();
+              renderBookings();
+            });
+        })
+        .catch(err => {
+          console.error("LOAD BOOKINGS ERROR:", err);
+        });
+    }
+
+    function cancelBooking(id) {
+
+      fetch(`http://localhost:8080/api/bookings/cancel/${id}`, {
+        method: "PUT"
+      })
+        .then(res => res.json())
+        .then(data => {
+
+          alert("Booking cancelled successfully!");
+
+          loadBookings(); // reload bookings list
+
+        })
+        .catch(err => {
+          console.error("Cancel failed:", err);
+          alert("Failed to cancel booking");
+        });
+    }
+
+    function downloadInvoice(id) {
+
+      const booking = allBookings.find(b => b.id == id);
+
+      if (!booking) {
+        alert("Booking not found");
+        return;
+      }
+
+      const invoiceWindow = window.open("", "_blank");
+
+      invoiceWindow.document.write(`
+<html>
+<head>
+    <title>Invoice ${booking.id}</title>
+</head>
+<body>
+    <h1>RentalCar AI Invoice</h1>
+
+    <table border="1" cellpadding="10">
+        <tr><td>Invoice No</td><td>INV-${booking.id}</td></tr>
+        <tr><td>Car</td><td>${booking.car}</td></tr>
+        <tr><td>Pickup Date</td><td>${booking.pickupDate}</td></tr>
+        <tr><td>Return Date</td><td>${booking.returnDate}</td></tr>
+        <tr><td>Total Amount</td><td>${booking.amount}</td></tr>
+        <tr><td>Status</td><td>${booking.status}</td></tr>
+    </table>
+</body>
+</html>
+`);
+
+invoiceWindow.document.close();
+invoiceWindow.print();
+}
+
+    function updateCounts() {
+      const statuses = ['upcoming', 'active', 'completed', 'cancelled'];
+      document.getElementById('cntAll').textContent = allBookings.length;
+      statuses.forEach(s => document.getElementById('cnt' + s.charAt(0).toUpperCase() + s.slice(1)).textContent = allBookings.filter(b => b.status === s).length);
+    }
+
+    function renderStats() {
+      const total = allBookings.length;
+      const completed = allBookings.filter(b => b.status === 'completed').length;
+      const upcoming = allBookings.filter(b => b.status === 'upcoming').length;
+      const spent = allBookings.filter(b => b.status !== 'cancelled').reduce((s, b) => {
+        return s + (parseFloat((b.amount || '0').replace(/[₹,]/g, '')) || 0);
+      }, 0);
+      document.getElementById('statsRow').innerHTML = `
+<div class="stat-box"><div class="stat-ico ico-gold"><i class="fas fa-calendar-check"></i></div><div><div class="stat-val">${total}</div><div class="stat-lbl">Total</div></div></div>
+
+<div class="stat-box"><div class="stat-ico ico-green"><i class="fas fa-check-circle"></i></div><div><div class="stat-val">${completed}</div><div class="stat-lbl">Completed</div></div></div>
+
+<div class="stat-box"><div class="stat-ico ico-orange"><i class="fas fa-clock"></i></div><div><div class="stat-val">${upcoming}</div><div class="stat-lbl">Upcoming</div></div></div>
+
+<div class="stat-box"><div class="stat-ico ico-red"><i class="fas fa-rupee-sign"></i></div><div><div class="stat-val">₹${Math.round(spent/1000)}k</div><div class="stat-lbl">Spent</div></div></div>
+`;
+    }
+
+    function setFilter(f, btn) {
+      currentFilter = f;
+      document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderBookings();
+    }
+
+    function renderBookings() {
+      console.log("renderBookings called");
+      console.log("allBookings =", allBookings);
+      const q = (document.getElementById('bsearch').value || '').toLowerCase();
+      let filtered = allBookings.filter(b => {
+        const matchFilter = currentFilter === 'all' || b.status === currentFilter;
+        const matchSearch =
+          !q ||
+          b.car.toLowerCase().includes(q) ||
+          String(b.id).includes(q) ||
+          (b.type || '').toLowerCase().includes(q);
+        return matchFilter && matchSearch;
+      });
+      filtered = [...filtered].sort((a, b) => new Date(b.bookedOn) - new Date(a.bookedOn));
+      if (!filtered.length) {
+        document.getElementById('bookingsList').innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon"><i class="fas fa-calendar-times"></i></span>
+        <div class="empty-title">${currentFilter === 'all' ? 'No bookings yet' : 'No ' + currentFilter + ' bookings'}</div>
+        <div class="empty-sub">
+  ${currentFilter === 'all'
+            ? 'Your booking history will appear here once you rent your first car.'
+            : 'Switch to another tab or explore our fleet.'}
+</div>
+
+<a href="cars.html" class="btn-browse">
+  <i class="fas fa-car me-2"></i>Browse Cars
+</a>
+</div>
+`;
+
+        return;
+      }
+      document.getElementById('bookingsList').innerHTML = filtered.map(b => bookingCardHTML(b)).join('');
+    }
+
+
+    function bookingCardHTML(b) {
+      const img = b.img || (b.carId ? CAR_IMGS[b.carId] : null) || 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&q=80';
+      console.log("Image =", img);
+      const statusClass = { 'upcoming': 's-upcoming', 'active': 's-active', 'completed': 's-completed', 'cancelled': 's-cancelled' }[b.status] || 's-completed';
+      const statusLabel = { 'upcoming': 'Upcoming', 'active': 'Active', 'completed': 'Completed', 'cancelled': 'Cancelled' }[b.status] || '—';
+      const pickFmt = b.pickupDate
+        ? new Date(b.pickupDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '-';
+
+      const retFmt = b.returnDate
+        ? new Date(b.returnDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '-';
+
+      const bookedFmt = b.bookedOn
+        ? new Date(b.bookedOn).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '-';
+
+      // Progress bar for upcoming
+      let progressHTML = '';
+      if (b.status === 'upcoming') {
+        const now = Date.now(), pick = new Date(b.pickupDate).getTime(), booked = new Date(b.bookedOn || b.pickupDate).getTime();
+        const total = pick - booked, elapsed = now - booked;
+        const pct = Math.max(5, Math.min(100, Math.round(elapsed / total * 100)));
+        progressHTML = `<div class="timeline-bar mt-2"><div class="timeline-fill" style="width:${pct}%"></div></div><div style="font-size:.68rem;color:var(--muted);margin-top:.3rem;">${pct}% of time until pick-up</div>`;
+      }
+
+      // Action buttons
+      let actions = '';
+      if (b.status === 'upcoming') {
+        actions = `<button class="btn-action btn-view" onclick="viewCar(${b.carId || 1})">View Car</button>
+<button class="btn-action btn-cancel" onclick="cancelBooking(${b.id})">Cancel</button>
+<button class="btn-action btn-invoice" onclick="downloadInvoice(${b.id})">Invoice</button>`;
+      } else if (b.status === 'active') {
+        actions = `<button class="btn-action btn-view" onclick="viewCar(${b.carId || 1})">View Details</button>`;
+      } else if (b.status === 'completed') {
+        actions = `<button class="btn-action btn-rebook" onclick="viewCar(${b.carId || 1})">Rebook</button>
+<button class="btn-action btn-review" onclick="openReviewModal('${b.id}','${b.car}')">Review</button>
+<button class="btn-action btn-invoice" onclick="downloadInvoice(${b.id})">Invoice</button>`;
+      } else if (b.status === 'cancelled') {
+        actions = `<button class="btn-action btn-rebook" onclick="viewCar(${b.carId || 1})">Book Again</button>`;
+      }
+
+      return `
+    <div class="booking-card d-flex" id="bc-${b.id}">
+      <div class="bc-img">
+        <img src="${img}" alt="${b.car}" loading="lazy"/>
+        <div class="bc-status ${statusClass}">${statusLabel}</div>
+      </div>
+      <div class="bc-body">
+        <div class="bc-top">
+          <div>
+            <div class="bc-car-name">${b.car}</div>
+            <div class="bc-car-type">${b.type || 'Car Rental'}</div>
+          </div>
+          <div class="bc-amount">${b.amount}</div>
+        </div>
+        <div class="bc-meta">
+          <div class="bc-meta-item"><i class="fas fa-calendar-alt"></i>Pick-up <strong>${pickFmt}</strong></div>
+          <div class="bc-meta-item"><i class="fas fa-calendar-check"></i>Return <strong>${retFmt}</strong></div>
+          <div class="bc-meta-item"><i class="fas fa-moon"></i><strong>${b.days}</strong> day${b.days > 1 ? 's' : ''}</div>
+          <div class="bc-meta-item"><i class="fas fa-receipt"></i>Booked <strong>${bookedFmt}</strong></div>
+        </div>
+        ${progressHTML}
+        <div class="bc-bottom">
+          <div class="bc-ref">Ref: <span>${b.id}</span></div>
+          <div class="bc-actions">${actions}</div>
+        </div>
+      </div>
+    </div>
+  `;
+    }
+
+    function viewCar(id) { window.location.href = 'car-details.html?id=' + id; }
+
+    /* CANCEL */
+    let cancelId = null;
+    function openCancelModal(id) {
+      cancelId = id;
+      const b = allBookings.find(x => x.id === id);
+      if (!b) return;
+      const pickFmt = new Date(b.pickupDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      const retFmt = new Date(b.returnDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('cancelInfo').innerHTML = `
+    <div class="m-booking-row"><span>Car</span><span>${b.car}</span></div>
+    <div class="m-booking-row"><span>Pick-up</span><span>${pickFmt}</span></div>
+    <div class="m-booking-row"><span>Return</span><span>${retFmt}</span></div>
+    <div class="m-booking-row"><span>Amount (refund)</span><span style="color:var(--green);">${b.amount}</span></div>
+  `;
+      document.getElementById('cancelModal').classList.add('show');
+    }
+    function closeCancelModal() { document.getElementById('cancelModal').classList.remove('show'); cancelId = null; }
+    function confirmCancel() {
+      if (!cancelId) return;
+      // Mark in localStorage
+      const stored = JSON.parse(localStorage.getItem('rcai_bookings') || '[]');
+      const idx = stored.findIndex(b => b.id === cancelId);
+      if (idx >= 0) { stored[idx].status = 'cancelled'; localStorage.setItem('rcai_bookings', JSON.stringify(stored)); }
+      // Update in allBookings
+      const ab = allBookings.findIndex(b => b.id === cancelId);
+      if (ab >= 0) allBookings[ab].status = 'cancelled';
+      closeCancelModal();
+      toast('Booking cancelled. Refund in 3 business days.', '#f59e0b');
+      updateCounts();
+      renderStats();
+      renderBookings();
+    }
+
+    /* REVIEW */
+    let reviewId = null;
+    function openReviewModal(id, carName) {
+      reviewId = id; starRating = 0;
+      document.getElementById('reviewCarName').textContent = carName;
+      document.getElementById('reviewText').value = '';
+      document.querySelectorAll('.star-picker span').forEach(s => s.classList.remove('lit'));
+      document.getElementById('reviewModal').classList.add('show');
+    }
+    function closeReviewModal() { document.getElementById('reviewModal').classList.remove('show'); reviewId = null; }
+    function setStar(n) {
+      starRating = n;
+      document.querySelectorAll('.star-picker span').forEach(s => {
+        s.classList.toggle('lit', parseInt(s.dataset.s) <= n);
+      });
+    }
+    function submitReview() {
+      if (!starRating) { toast('Please select a star rating', '#f59e0b'); return; }
+      closeReviewModal();
+      toast('Review submitted — thank you!', '#22c55e');
+    }
+
+    loadUser();
+    loadBookings();
+  </script>
+</body>
+</html>

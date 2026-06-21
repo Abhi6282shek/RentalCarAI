@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Secure Payment Portal — RentalCar AI</title>
+<!-- Bootstrap & FontAwesome CDN libraries -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts: Syne for headings, Inter for body text -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* ======================================================
+   ROOT DESIGN SYSTEM — RentalCar AI Glassmorphic System
+   ====================================================== */
+:root {
+  --bg: #080c14;
+  --bg2: #0d1421;
+  --bg3: #111827;
+  --card: rgba(255, 255, 255, 0.04);
+  --glass: rgba(255, 255, 255, 0.08);
+  --gold: #c8a84b;
+  --gold-dim: rgba(200, 168, 75, 0.15);
+  --gold-glow: rgba(200, 168, 75, 0.3);
+  --txt: #f0f0f0;
+  --muted: #7a8499;
+  --dim: #4a5568;
+  --green: #22c55e;
+  --red: #e84545;
+  --blue: #3b82f6;
+  --orange: #f59e0b;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --transition: all 0.3s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  /* Radial glow background for UI depth */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(200, 168, 75, 0.05), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.04), transparent 40%);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ======================================================
+   SIDEBAR NAVIGATION SYSTEM
+   ====================================================== */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--glass);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+.sb-brand {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--glass);
+}
+.sb-brand a {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--txt);
+  text-decoration: none;
+}
+.sb-brand span { color: var(--gold); }
+.sb-user {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--glass);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.sb-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.sb-name { font-size: .83rem; font-weight: 600; line-height: 1.2; }
+.sb-role { font-size: .68rem; color: var(--muted); }
+.sb-nav { flex: 1; padding: .8rem 0; overflow-y: auto; }
+.sb-section {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--dim);
+  padding: .4rem 1.5rem;
+  font-weight: 600;
+  margin-top: .4rem;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .72rem 1.5rem;
+  font-size: .82rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all .2s;
+  border-left: 3px solid transparent;
+}
+.sb-link:hover { color: var(--txt); background: rgba(255,255,255,.03); }
+.sb-link.active { color: var(--gold); background: var(--gold-dim); border-left-color: var(--gold); }
+.sb-link i { width: 15px; text-align: center; font-size: .82rem; }
+.sb-bottom { padding: 1rem 1.5rem; border-top: 1px solid var(--glass); }
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  color: var(--muted);
+  font-size: .82rem;
+  padding: .55rem .75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  background: none;
+  border: none;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+.btn-logout:hover { color: var(--red); background: rgba(232,69,69,.07); }
+
+/* ======================================================
+   MAIN INTERFACE
+   ====================================================== */
+.main { margin-left: 240px; min-height: 100vh; }
+.topbar {
+  background: rgba(8,12,20,.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.pg-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+.tb-right { display: flex; align-items: center; gap: .9rem; }
+
+.content { padding: 2rem; }
+
+/* Page Header */
+.page-header { margin-bottom: 2rem; }
+.page-header h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: .3rem; }
+.page-header p { font-size: .85rem; color: var(--muted); }
+
+/* ======================================================
+   CHECKOUT LAYOUT
+   ====================================================== */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+@media(max-width: 992px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .checkout-grid { grid-template-columns: 1fr; }
+}
+
+/* Panel cards */
+.panel-card {
+  background: var(--card);
+  border: 1px solid var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  padding: 1.8rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  margin-bottom: 1.5rem;
+}
+
+.panel-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--glass);
+  padding-bottom: 0.8rem;
+}
+.panel-title i { color: var(--gold); }
+
+/* ======================================================
+   PAYMENT OPTIONS TABS
+   ====================================================== */
+.payment-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.pay-tab {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass);
+  border-radius: 8px;
+  padding: 0.8rem 0.5rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.pay-tab i { font-size: 1.2rem; color: var(--muted); transition: var(--transition); }
+.pay-tab:hover {
+  border-color: var(--gold-glow);
+  color: var(--txt);
+}
+.pay-tab.active {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.pay-tab.active i { color: var(--gold); }
+
+.payment-form-content {
+  display: none;
+}
+.payment-form-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom form components */
+.form-label-custom {
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--muted);
+  margin-bottom: .4rem;
+}
+.form-control-custom {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass);
+  color: var(--txt);
+  border-radius: 8px;
+  padding: .7rem .9rem;
+  font-size: .88rem;
+  width: 100%;
+  outline: none;
+  transition: var(--transition);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 1rem;
+}
+.form-control-custom:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+  background: rgba(255, 255, 255, 0.05);
+}
+.form-control-custom::placeholder { color: var(--dim); }
+
+/* ======================================================
+   VEHICLE & BILLING CARDS
+   ====================================================== */
+.selected-car-card {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass);
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+.car-card-img {
+  width: 100px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--bg3);
+}
+.car-card-details {
+  flex: 1;
+}
+.car-card-brand {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.car-card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+.car-card-rate {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.details-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.details-row strong { color: var(--txt); }
+
+.price-breakdown {
+  margin-top: 1rem;
+  border-top: 1px solid var(--glass);
+  padding-top: 1rem;
+}
+.pb-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+.pb-row.total {
+  border-top: 1px dotted var(--glass);
+  padding-top: 0.8rem;
+  margin-top: 0.6rem;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--txt);
+}
+.pb-row.total span:last-child {
+  color: var(--gold);
+  font-family: 'Syne', sans-serif;
+}
+
+/* ======================================================
+   ACTION BUTTONS & SIMULATIONS
+   ====================================================== */
+.btn-pay {
+  width: 100%;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.85rem;
+  border-radius: 8px;
+  transition: var(--transition);
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-pay:hover {
+  background: #e0b84f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(200,168,75,0.25);
+}
+
+.simulator-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--dim);
+  letter-spacing: 1px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+}
+.simulator-box {
+  display: flex;
+  gap: 0.8rem;
+}
+.simulator-box button {
+  flex: 1;
+  padding: 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Inter', sans-serif;
+}
+.btn-sim-success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: var(--green);
+}
+.btn-sim-success:hover {
+  background: rgba(34, 197, 94, 0.22);
+}
+.btn-sim-failed {
+  background: rgba(232, 69, 69, 0.12);
+  border: 1px solid rgba(232, 69, 69, 0.3);
+  color: var(--red);
+}
+.btn-sim-failed:hover {
+  background: rgba(232, 69, 69, 0.22);
+}
+
+/* ======================================================
+   TRANSACTION PROCESSING OVERLAY
+   ====================================================== */
+.processing-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: none; /* Controlled by JS */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  gap: 1.2rem;
+}
+.processing-overlay.active {
+  display: flex;
+}
+.brain-glow {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brain-glow i {
+  font-size: 2.2rem;
+  color: var(--gold);
+  z-index: 2;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+.ripple-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--gold-glow);
+  border-radius: 50%;
+  animation: ripple 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px var(--gold)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 12px var(--gold)); }
+}
+@keyframes ripple {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+.processing-text {
+  font-size: 0.9rem;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: 'Syne', sans-serif;
+}
+.processing-desc {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: -0.6rem;
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 99999;
+}
+.toast-msg {
+  background: rgba(8, 12, 20, 0.95);
+  border: 1px solid var(--glass);
+  backdrop-filter: blur(10px);
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  animation: slideIn 0.3s ease;
+}
+@keyframes slideIn {
+  from { transform: translateX(110%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <a href="index.html">Rental<span>Car</span> AI</a>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">D</div>
+      <div>
+        <div class="sb-name" id="sbName">Driver</div>
+        <div class="sb-role">Member</div>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Main</div>
+      <a class="sb-link" href="dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a class="sb-link" href="cars.html"><i class="fas fa-car"></i>Browse Cars</a>
+      <a class="sb-link" href="favorites.html"><i class="fas fa-heart"></i>Favorites</a>
+      <a class="sb-link active" href="my-bookings.html"><i class="fas fa-calendar-alt"></i>My Bookings</a>
+      <div class="sb-section">Tools</div>
+      <a class="sb-link" href="ai-recommendation.html"><i class="fas fa-robot"></i>AI Recommender</a>
+      <a class="sb-link" href="#"><i class="fas fa-bell"></i>Notifications</a>
+      <div class="sb-section">Account</div>
+      <a class="sb-link" href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+      <a class="sb-link" href="admin.html"><i class="fas fa-user-shield"></i>Admin Panel</a>
+    </div>
+    <div class="sb-bottom">
+      <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- ===================== MAIN WRAPPER ===================== -->
+  <div class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="hamburger-btn d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="pg-title">Secure Checkout</div>
+      </div>
+      <div class="tb-right">
+        <div class="sb-avatar" id="topAvatar">D</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="page-header">
+        <h2>Complete Your <span>Reservation</span></h2>
+        <p>Your vehicle is locked. Complete checkout to confirm your reservation details.</p>
+      </div>
+
+      <div class="checkout-grid">
+        
+        <!-- Left Side: Payment Details -->
+        <div>
+          <!-- Selected Payment Method Card -->
+          <div class="panel-card">
+            <h3 class="panel-title"><i class="fas fa-shield-alt"></i> Select Payment Method</h3>
+            
+            <div class="payment-tabs">
+              <div class="pay-tab active" id="tab-upi" onclick="switchPaymentMethod('upi')">
+                <i class="fas fa-mobile-alt"></i> UPI / QR
+              </div>
+              <div class="pay-tab" id="tab-card" onclick="switchPaymentMethod('card')">
+                <i class="far fa-credit-card"></i> Credit Card
+              </div>
+              <div class="pay-tab" id="tab-debit" onclick="switchPaymentMethod('debit')">
+                <i class="fas fa-credit-card"></i> Debit Card
+              </div>
+              <div class="pay-tab" id="tab-net" onclick="switchPaymentMethod('net')">
+                <i class="fas fa-university"></i> Net Banking
+              </div>
+            </div>
+
+            <!-- UPI Payment Form -->
+            <div class="payment-form-content active" id="form-upi">
+              <div class="d-flex flex-column mb-3">
+                <label class="form-label-custom" for="upiId">Virtual Payment Address (VPA)</label>
+                <input type="text" id="upiId" class="form-control-custom" placeholder="e.g. mobileNumber@upi / name@oksbi" />
+                <span style="font-size:0.72rem; color:var(--muted); margin-top:-0.5rem;"><i class="fas fa-info-circle"></i> A payment request will be sent to your UPI app.</span>
+              </div>
+            </div>
+
+            <!-- Credit Card Form -->
+            <div class="payment-form-content" id="form-card">
+              <div class="row">
+                <div class="col-12">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="ccName">Cardholder Name</label>
+                    <input type="text" id="ccName" class="form-control-custom" placeholder="e.g. AARAV SHARMA" />
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="ccNum">Card Number</label>
+                    <input type="text" id="ccNum" class="form-control-custom" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCardNumber(this)" />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="ccExp">Expiry Date</label>
+                    <input type="text" id="ccExp" class="form-control-custom" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="ccCvv">CVV Code</label>
+                    <input type="password" id="ccCvv" class="form-control-custom" placeholder="•••" maxlength="3" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Debit Card Form -->
+            <div class="payment-form-content" id="form-debit">
+              <div class="row">
+                <div class="col-12">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="dcName">Cardholder Name</label>
+                    <input type="text" id="dcName" class="form-control-custom" placeholder="e.g. ISHA PATEL" />
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="dcNum">Card Number</label>
+                    <input type="text" id="dcNum" class="form-control-custom" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCardNumber(this)" />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="dcExp">Expiry Date</label>
+                    <input type="text" id="dcExp" class="form-control-custom" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="d-flex flex-column">
+                    <label class="form-label-custom" for="dcCvv">CVV Code</label>
+                    <input type="password" id="dcCvv" class="form-control-custom" placeholder="•••" maxlength="3" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Net Banking Form -->
+            <div class="payment-form-content" id="form-net">
+              <div class="d-flex flex-column mb-3">
+                <label class="form-label-custom" for="bankSelect">Select Bank Account</label>
+                <select id="bankSelect" class="form-control-custom" style="background-color: var(--bg2); color:var(--txt);">
+                  <option value="">-- Choose NetBanking Bank --</option>
+                  <option value="sbi">State Bank of India (SBI)</option>
+                  <option value="hdfc">HDFC Bank</option>
+                  <option value="icici">ICICI Bank</option>
+                  <option value="axis">Axis Bank</option>
+                  <option value="pnb">Punjab National Bank</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Final checkout actions -->
+            <button class="btn-pay" onclick="handlePayAction()">
+              <i class="fas fa-lock"></i> Authorize & Pay <span id="btnPayAmount">₹0</span>
+            </button>
+
+            <!-- Checkout simulation panel -->
+            <div class="simulator-title">Demo Payment Simulator</div>
+            <div class="simulator-box">
+              <button class="btn-sim-success" onclick="triggerSimulation(true)">
+                <i class="fas fa-check"></i> Simulate Success
+              </button>
+              <button class="btn-sim-failed" onclick="triggerSimulation(false)">
+                <i class="fas fa-times"></i> Simulate Failure
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Side: Order Summary -->
+        <div>
+          <div class="panel-card">
+            <h3 class="panel-title"><i class="fas fa-receipt"></i> Booking Summary</h3>
+            
+            <!-- Dynamic car summary card -->
+            <div class="selected-car-card">
+              <img id="summaryCarImg" src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=200" class="car-card-img" alt="car"/>
+              <div class="car-card-details">
+                <span class="car-card-brand" id="summaryCarBrand">Brand</span>
+                <h4 class="car-card-title" id="summaryCarName">Model Name</h4>
+                <span class="car-card-rate" id="summaryCarRate">₹0 / day</span>
+              </div>
+            </div>
+
+            <!-- Rental logistics details -->
+            <div class="details-row">
+              <span>Pick-up Location</span>
+              <strong id="summaryLoc">N/A</strong>
+            </div>
+            <div class="details-row">
+              <span>Pick-up Date</span>
+              <strong id="summaryPickDate">N/A</strong>
+            </div>
+            <div class="details-row">
+              <span>Return Date</span>
+              <strong id="summaryReturnDate">N/A</strong>
+            </div>
+            <div class="details-row">
+              <span>Total Duration</span>
+              <strong id="summaryDays">0 days</strong>
+            </div>
+
+            <!-- Calculation breakdown -->
+            <div class="price-breakdown">
+              <div class="pb-row">
+                <span>Rental Base Cost</span>
+                <span id="pbBaseCost">₹0</span>
+              </div>
+              <div class="pb-row">
+                <span>Taxes & GST (18%)</span>
+                <span id="pbTax">₹0</span>
+              </div>
+              <div class="pb-row">
+                <span>Insurance & Service Fee</span>
+                <span id="pbServiceFee">₹450</span>
+              </div>
+              <div class="pb-row total">
+                <span>Total Amount Due</span>
+                <span id="pbTotal">₹0</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Processing screen overlay -->
+  <div class="processing-overlay" id="processingOverlay">
+    <div class="brain-glow">
+      <div class="ripple-ring"></div>
+      <i class="fas fa-brain"></i>
+    </div>
+    <span class="processing-text" id="processingText">Processing transaction...</span>
+    <span class="processing-desc">Please do not refresh this page. Connecting to bank server...</span>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const BACKEND_URL = "http://localhost:8080/api";
+
+    const MOCK_FLEET = [
+      { id: 1, brand: "BMW", name: "3 Series 2024", type: "Luxury Sedan", fuel: "Petrol", price: 69, pricePerDay: 6500, imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500&q=80", img: "images/cars/BMW 3-Series-1.png" },
+      { id: 2, brand: "Tesla", name: "Model Y 2024", type: "Electric SUV", fuel: "Electric", price: 89, pricePerDay: 8900, imageUrl: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80", img: "images/cars/Tesla Model Y-1.png" },
+      { id: 3, brand: "Mercedes-Benz", name: "C-Class 2024", type: "Luxury Sedan", fuel: "Petrol", price: 119, pricePerDay: 12000, imageUrl: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=500&q=80", img: "images/cars/Mercedes C-Class-1.png" },
+      { id: 4, brand: "Porsche", name: "911 Carrera 2024", type: "Sports Car", fuel: "Petrol", price: 219, pricePerDay: 22000, imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80", img: "images/cars/Porsche 911-1.png" },
+      { id: 5, brand: "Audi", name: "Q7 Premium 2024", type: "Luxury SUV", fuel: "Diesel", price: 139, pricePerDay: 13900, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&q=80", img: "images/cars/Audi Q7 2024-1.png" },
+      { id: 6, brand: "Toyota", name: "Camry Hybrid 2024", type: "Hybrid Sedan", fuel: "Hybrid", price: 59, pricePerDay: 5900, imageUrl: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80", img: "images/cars/Toyota Camry Hybrid-1.png" }
+    ];
+
+    // Load active query details
+    const params = new URLSearchParams(location.search);
+    const carId = parseInt(params.get('carId')) || 1;
+    const pickupDateStr = params.get('pickupDate') || new Date().toISOString().split('T')[0];
+    const returnDateStr = params.get('returnDate') || new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
+    const pickupLocation = params.get('pickupLocation') || "Main Hub";
+
+    let activeCar = null;
+    let computedDays = 1;
+    let subtotalAmount = 0;
+    let gstAmount = 0;
+    let finalTotalAmount = 0;
+    let currencySymbol = "₹";
+
+    // Load user avatar
+    function loadUser() {
+      const u = JSON.parse(localStorage.getItem('rcai_user') || '{"name":"Driver"}');
+      const init = (u.name || 'D')[0].toUpperCase();
+      if (document.getElementById('sbName')) document.getElementById('sbName').textContent = u.name || 'Driver';
+      ['sbAvatar','topAvatar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = init;
+      });
+    }
+
+    function logout() {
+      if (confirm('Sign out?')) {
+        localStorage.removeItem('rcai_user');
+        window.location.href = 'login.html';
+      }
+    }
+
+    function showToast(message) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast-msg";
+      toast.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Tab switching for payment options
+    function switchPaymentMethod(method) {
+      document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.payment-form-content').forEach(f => f.classList.remove('active'));
+      
+      document.getElementById(`tab-${method}`).classList.add('active');
+      document.getElementById(`form-${method}`).classList.add('active');
+    }
+
+    // Formatting helpers
+    function formatCardNumber(el) {
+      let val = el.value.replace(/\D/g, '');
+      let matches = val.match(/\d{4,16}/g);
+      let match = (matches && matches[0]) || '';
+      let parts = [];
+      for (let i = 0, len = match.length; i < len; i += 4) {
+        parts.push(match.substring(i, i + 4));
+      }
+      if (parts.length > 0) {
+        el.value = parts.join(' ');
+      } else {
+        el.value = val;
+      }
+    }
+
+    function formatExpiry(el) {
+      let val = el.value.replace(/\D/g, '');
+      if (val.length >= 2) {
+        el.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+      } else {
+        el.value = val;
+      }
+    }
+
+    // Dynamic calculations
+    async function loadCarAndDetails() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/cars`);
+        if (response.ok) {
+          const list = await response.json();
+          activeCar = list.find(c => c.id === carId);
+        }
+      } catch (e) {
+        console.warn("REST API offline. Loading mock car payload.", e);
+      }
+
+      if (!activeCar) {
+        activeCar = MOCK_FLEET.find(c => c.id === carId) || MOCK_FLEET[0];
+      }
+
+      // Compute Rent span
+      const start = new Date(pickupDateStr);
+      const end = new Date(returnDateStr);
+      let diff = end - start;
+      computedDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (computedDays <= 0) computedDays = 1;
+
+      // Pricing logic: check currency values
+      let baseRate = activeCar.pricePerDay || activeCar.price || 5000;
+      if (baseRate < 500) {
+        currencySymbol = "$";
+      } else {
+        currencySymbol = "₹";
+      }
+
+      subtotalAmount = computedDays * baseRate;
+      gstAmount = Math.round(subtotalAmount * 0.18);
+      const flatFee = currencySymbol === "$" ? 12 : 450;
+      finalTotalAmount = subtotalAmount + gstAmount + flatFee;
+
+      // Update Order Summary DOM nodes
+      document.getElementById('summaryCarBrand').textContent = activeCar.brand;
+      document.getElementById('summaryCarName').textContent = activeCar.name;
+      document.getElementById('summaryCarRate').textContent = `${currencySymbol}${baseRate.toLocaleString('en-IN')} / day`;
+      document.getElementById('summaryLoc').textContent = pickupLocation;
+      document.getElementById('summaryPickDate').textContent = new Date(pickupDateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('summaryReturnDate').textContent = new Date(returnDateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('summaryDays').textContent = `${computedDays} day${computedDays > 1 ? 's' : ''}`;
+
+      document.getElementById('pbBaseCost').textContent = `${currencySymbol}${subtotalAmount.toLocaleString('en-IN')}`;
+      document.getElementById('pbTax').textContent = `${currencySymbol}${gstAmount.toLocaleString('en-IN')}`;
+      document.getElementById('pbServiceFee').textContent = `${currencySymbol}${flatFee.toLocaleString('en-IN')}`;
+      document.getElementById('pbTotal').textContent = `${currencySymbol}${finalTotalAmount.toLocaleString('en-IN')}`;
+      
+      document.getElementById('btnPayAmount').textContent = `${currencySymbol}${finalTotalAmount.toLocaleString('en-IN')}`;
+
+      // Update car preview image
+      const preview = document.getElementById('summaryCarImg');
+      preview.src = activeCar.imageUrl || activeCar.img || "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=200";
+      preview.onerror = function() {
+        this.src = `https://placehold.co/200x128/0d1421/c8a84b?text=${encodeURIComponent(activeCar.name)}`;
+      };
+    }
+
+    // Pay Action (validate fields, then triggers success simulation)
+    function handlePayAction() {
+      const activeTab = document.querySelector('.pay-tab.active').id;
+      
+      if (activeTab === 'tab-upi') {
+        const upi = document.getElementById('upiId').value.trim();
+        if (!upi || !upi.includes('@')) {
+          alert("Please enter a valid UPI address (e.g. user@bank)");
+          return;
+        }
+      } else if (activeTab === 'tab-card' || activeTab === 'tab-debit') {
+        const prefix = activeTab === 'tab-card' ? 'cc' : 'dc';
+        const name = document.getElementById(`${prefix}Name`).value.trim();
+        const num = document.getElementById(`${prefix}Num`).value.trim();
+        const exp = document.getElementById(`${prefix}Exp`).value.trim();
+        const cvv = document.getElementById(`${prefix}Cvv`).value.trim();
+
+        if (!name || num.length < 16 || exp.length < 5 || cvv.length < 3) {
+          alert("Please complete all credit/debit card fields correctly.");
+          return;
+        }
+      } else if (activeTab === 'tab-net') {
+        const bank = document.getElementById('bankSelect').value;
+        if (!bank) {
+          alert("Please choose a bank from the drop-down list.");
+          return;
+        }
+      }
+
+      // Valid inputs -> Trigger Success path
+      triggerSimulation(true);
+    }
+
+    // Trigger simulation overlay and save flow
+    async function triggerSimulation(isSuccess) {
+      const overlay = document.getElementById('processingOverlay');
+      const text = document.getElementById('processingText');
+      
+      overlay.classList.add('active');
+      text.textContent = isSuccess ? "Authorizing transaction with secure gateway..." : "Querying payment processor servers...";
+
+      await new Promise(r => setTimeout(r, 2000));
+
+      if (!isSuccess) {
+        // Redirect immediately to failed
+        overlay.classList.remove('active');
+        location.href = `payment-failed.html?carId=${carId}&pickupDate=${pickupDateStr}&returnDate=${returnDateStr}&pickupLocation=${encodeURIComponent(pickupLocation)}`;
+        return;
+      }
+
+      text.textContent = "Payment approved! Saving reservation to backend database...";
+
+      // Save Booking details to database
+      const user = JSON.parse(localStorage.getItem('rcai_user') || '{"id":1}');
+      const bookingData = {
+        userId: user.id || 1,
+        carId: carId,
+        pickupDate: pickupDateStr,
+        returnDate: returnDateStr,
+        bookingStatus: "Booked",
+        bookedOn: new Date().toISOString()
+      };
+
+      let bookingId = Math.floor(100000 + Math.random() * 900000); // simulated random booking ID
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/bookings/create`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingData)
+        });
+
+        if (response.ok) {
+          const savedData = await response.json();
+          if (savedData && savedData.id) {
+            bookingId = savedData.id;
+          }
+        }
+      } catch (err) {
+        console.warn("Connection to Spring Boot failed. Generating local mockup transaction code.", err);
+      }
+
+      // Wait brief 1s, then redirect to success page
+      await new Promise(r => setTimeout(r, 1000));
+      overlay.classList.remove('active');
+      location.href = `payment-success.html?bookingId=${bookingId}&carId=${carId}&pickupDate=${pickupDateStr}&returnDate=${returnDateStr}&amount=${finalTotalAmount}&currency=${encodeURIComponent(currencySymbol)}`;
+    }
+
+    // Run startup load
+    document.addEventListener("DOMContentLoaded", () => {
+      loadUser();
+      loadCarAndDetails();
+    });
+  </script>
+</body>
+</html>

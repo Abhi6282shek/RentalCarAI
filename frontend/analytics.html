@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports & Analytics Dashboard — RentalCar AI</title>
+
+  <!-- Icon font for UI icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts: Syne for headings, Inter for body text -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ======================================================
+    ROOT VARIABLES — RentalCar AI design system
+    ====================================================== */
+    :root {
+      --bg: #080c14;
+      /* page background */
+      --bg2: #0d1421;
+      /* panel background */
+      --glass: rgba(255, 255, 255, 0.08);
+      /* glass border */
+      --card: rgba(255, 255, 255, 0.04);
+      /* glass card fill */
+      --gold: #c8a84b;
+      /* primary accent */
+      --gold-dim: rgba(200, 168, 75, 0.15);
+      --gold-glow: rgba(200, 168, 75, 0.3);
+      --txt: #f0f0f0;
+      --muted: #7a8499;
+      --dim: #4a5568;
+      --red: #e84545;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    /* ======================================================
+    GLOBAL RESET & UTILITIES
+    ====================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      /* radial glow background for depth */
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(200, 168, 75, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.06), transparent 40%);
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 3px;
+    }
+
+    /* ======================================================
+    SIDEBAR NAV
+    ====================================================== */
+    .sidebar {
+      width: 260px;
+      background: var(--bg2);
+      border-right: 1px solid var(--glass);
+      min-height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand {
+      padding: 1.6rem 1.5rem;
+      border-bottom: 1px solid var(--glass);
+    }
+
+    .sidebar-brand a {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      text-decoration: none;
+      color: var(--txt);
+    }
+
+    .sidebar-brand span {
+      color: var(--gold);
+    }
+
+    .sidebar-user {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--glass);
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-size: .85rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 1.2rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+
+    .nav-section-label {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      padding: .5rem 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-item-link {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      padding: .75rem 1.5rem;
+      font-size: .85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all .2s;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+
+    .nav-item-link:hover {
+      color: var(--txt);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-item-link.active {
+      color: var(--gold);
+      background: var(--gold-dim);
+      border-left-color: var(--gold);
+    }
+
+    .nav-item-link i {
+      width: 18px;
+      text-align: center;
+      font-size: .9rem;
+    }
+
+    .sidebar-bottom {
+      padding: 1.2rem 1.5rem;
+      border-top: 1px solid var(--glass);
+    }
+
+    .btn-back-portal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      width: 100%;
+      padding: .7rem;
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .btn-back-portal:hover {
+      border-color: var(--gold-glow);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    /* ======================================================
+    MAIN CONTENT WRAPPER
+    ====================================================== */
+    .main-wrapper {
+      margin-left: 260px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 260px);
+    }
+
+    .top-bar {
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass);
+      padding: 1.1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .top-bar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-badge {
+      font-size: .7rem;
+      background: rgba(200, 168, 75, 0.12);
+      border: 1px solid rgba(200, 168, 75, 0.3);
+      color: var(--gold);
+      padding: .2rem .6rem;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .content-container {
+      padding: 2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .section-title span {
+      color: var(--gold);
+    }
+
+    .section-desc {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: .2rem;
+    }
+
+    .actions-header-wrap {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    /* ======================================================
+    KPI STATS CARDS
+    ====================================================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+    }
+
+    .stat-card:hover {
+      border-color: rgba(200, 168, 75, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: .75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin-top: .3rem;
+      color: var(--txt);
+    }
+
+    .stat-icon-wrap {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+    }
+
+    .stat-icon-wrap.gold {
+      background: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .stat-icon-wrap.blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue);
+    }
+
+    .stat-icon-wrap.green {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--green);
+    }
+
+    .stat-icon-wrap.red {
+      background: rgba(232, 69, 69, 0.12);
+      color: var(--red);
+    }
+
+    /* ======================================================
+    CHARTS VISUALIZATION GRID
+    ====================================================== */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background: var(--card);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 1.6rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .panel-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .chart-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chart-card-title i {
+      color: var(--gold);
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+    }
+
+    /* ======================================================
+    AI INSIGHTS & TELEMETRY
+    ====================================================== */
+    .ai-insights-section {
+      margin-top: 0.5rem;
+    }
+
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 1200px) {
+      .ai-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .ai-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .ai-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ai-stat-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: all 0.3s ease;
+    }
+
+    .ai-stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold-glow);
+    }
+
+    .ai-stat-title {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .ai-stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--txt);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ai-stat-subtitle {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .ai-insights-panel {
+      background: rgba(200, 168, 75, 0.02);
+      border: 1px solid var(--gold-glow);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ai-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ai-panel-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ai-panel-title i {
+      color: var(--gold);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .ai-insights-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .ai-insight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+
+    .ai-insight-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .ai-insight-icon.success {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--green);
+    }
+
+    .ai-insight-icon.warning {
+      background: rgba(200, 168, 75, 0.12);
+      color: var(--gold);
+    }
+
+    .ai-insight-icon.danger {
+      background: rgba(232, 69, 69, 0.12);
+      color: var(--red);
+    }
+
+    .ai-insight-icon.info {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue);
+    }
+
+    .ai-insight-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .ai-insight-item-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--txt);
+    }
+
+    .ai-insight-item-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Buttons & Utilities */
+    .btn-action {
+      padding: .5rem .9rem;
+      font-size: .8rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .btn-gold:hover {
+      background: #e0b84f;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(200, 168, 75, 0.25);
+    }
+
+    .hamburger-btn {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--glass);
+      color: var(--txt);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* ======================================================
+    AI LOADER / THINKING ANIMATION
+    ====================================================== */
+    .ai-thinking {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 0;
+      gap: 1rem;
+    }
+
+    .brain-glow-wrap {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brain-glow-wrap i {
+      font-size: 2.1rem;
+      color: var(--gold);
+      z-index: 2;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    .brain-pulse-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--gold-glow);
+      border-radius: 50%;
+      animation: ripple 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px var(--gold));
+      }
+
+      50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 12px var(--gold));
+      }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0.6);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.4);
+        opacity: 0;
+      }
+    }
+
+    .ai-thinking-text {
+      font-size: 0.82rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .toast {
+      background: rgba(8, 12, 20, .95);
+      border: 1px solid var(--glass);
+      backdrop-filter: blur(20px);
+      border-radius: 10px;
+      padding: .8rem 1.2rem;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      min-width: 240px;
+      animation: slideIn .3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .top-bar {
+        padding: 1rem;
+      }
+
+      .hamburger-btn {
+        display: flex !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <a href="index.html">Rental<span>Car</span> AI</a>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="adminAvatar">A</div>
+      <div>
+        <div class="user-name">System Administrator</div>
+        <div class="user-role" id="adminEmail">admin@rentalcar.ai</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-item-link" href="admin.html?tab=overview"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a class="nav-item-link active" href="analytics.html"><i class="fas fa-chart-line"></i>Reports & Analytics</a>
+
+      <div class="nav-section-label">Management</div>
+      <a class="nav-item-link" href="admin.html?tab=cars"><i class="fas fa-car"></i>Cars Directory</a>
+      <a class="nav-item-link" href="admin.html?tab=bookings"><i class="fas fa-calendar-alt"></i>Bookings Log</a>
+      <a class="nav-item-link" href="admin.html?tab=users"><i class="fas fa-users"></i>Users Database</a>
+
+      <div class="nav-section-label">AI Assistant</div>
+      <a class="nav-item-link" href="admin.html?tab=recommendations"><i class="fas fa-brain"></i>AI Recommendations</a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <a href="dashboard.html" class="btn-back-portal">
+        <i class="fas fa-arrow-left"></i> User Portal
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===================== MAIN CONTENT WRAPPER ===================== -->
+  <div class="main-wrapper">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="top-bar-title" id="pageTitle">Reports & Analytics</h1>
+      </div>
+      <div class="top-bar-right">
+        <span class="admin-badge">Analytics Mode</span>
+      </div>
+    </header>
+
+    <!-- Core Content Area -->
+    <main class="content-container">
+
+      <!-- Section Header with CSV Export Actions -->
+      <section class="section-header">
+        <div>
+          <h2 class="section-title">Business <span>Intelligence</span></h2>
+          <p class="section-desc">Key performance indices, rental occupancy, and telemetry reports.</p>
+        </div>
+        <div class="actions-header-wrap">
+          <button class="btn-action btn-gold" id="btnExportCars" onclick="exportCarsReport()">
+            <i class="fas fa-car"></i> Export Cars CSV
+          </button>
+          <button class="btn-action btn-gold" id="btnExportBookings" onclick="exportBookingsReport()">
+            <i class="fas fa-calendar-alt"></i> Export Bookings CSV
+          </button>
+          <button class="btn-action btn-gold" id="btnExportUsers" onclick="exportUsersReport()">
+            <i class="fas fa-users"></i> Export Users CSV
+          </button>
+        </div>
+      </section>
+
+      <!-- KPI Summary Stats Grid -->
+      <section class="stats-grid">
+        <!-- Total Revenue -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Total Revenue</span>
+            <span class="stat-val" id="kpiRevenue">₹0</span>
+          </div>
+          <div class="stat-icon-wrap gold"><i class="fas fa-wallet"></i></div>
+        </div>
+        <!-- Total Bookings -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Total Bookings</span>
+            <span class="stat-val" id="kpiBookings">0</span>
+          </div>
+          <div class="stat-icon-wrap blue"><i class="fas fa-calendar-check"></i></div>
+        </div>
+        <!-- Total Cars -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Total Cars</span>
+            <span class="stat-val" id="kpiCars">0</span>
+          </div>
+          <div class="stat-icon-wrap gold"><i class="fas fa-car"></i></div>
+        </div>
+        <!-- Total Users -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Total Users</span>
+            <span class="stat-val" id="kpiUsers">0</span>
+          </div>
+          <div class="stat-icon-wrap blue"><i class="fas fa-users"></i></div>
+        </div>
+        <!-- Available Cars -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Available Fleet</span>
+            <span class="stat-val" id="kpiAvailable">0</span>
+          </div>
+          <div class="stat-icon-wrap green"><i class="fas fa-check-circle"></i></div>
+        </div>
+        <!-- Cancelled Bookings -->
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Cancelled Bookings</span>
+            <span class="stat-val" id="kpiCancelled">0</span>
+          </div>
+          <div class="stat-icon-wrap red"><i class="fas fa-times-circle"></i></div>
+        </div>
+      </section>
+
+      <!-- Visualization Charts Grid -->
+      <section class="charts-grid">
+        <!-- Monthly Bookings Bar Chart -->
+        <div class="panel-card">
+          <h3 class="chart-card-title"><i class="fas fa-chart-bar"></i> Monthly Bookings Volume</h3>
+          <div class="chart-container">
+            <canvas id="bookingsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly Revenue Line Chart -->
+        <div class="panel-card">
+          <h3 class="chart-card-title"><i class="fas fa-chart-line"></i> Revenue Trend (INR)</h3>
+          <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Booking Status Pie Chart -->
+        <div class="panel-card">
+          <h3 class="chart-card-title"><i class="fas fa-chart-pie"></i> Booking Status Distribution</h3>
+          <div class="chart-container">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top Booked Vehicles horizontal bar chart -->
+        <div class="panel-card">
+          <h3 class="chart-card-title"><i class="fas fa-crown"></i> Top Performing Vehicles</h3>
+          <div class="chart-container">
+            <canvas id="topCarsChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Telemetry & Smart Insights Card -->
+      <section class="ai-insights-section">
+        <div class="ai-insights-panel">
+          <div class="ai-panel-header">
+            <h3 class="ai-panel-title"><i class="fas fa-robot"></i> AI Telemetry & Smart Insights</h3>
+            <span class="admin-badge" style="background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: var(--green);">Real-time Telemetry</span>
+          </div>
+
+          <!-- Mini AI KPI highlights -->
+          <div class="ai-grid">
+            <div class="ai-stat-card">
+              <span class="ai-stat-title">Most Booked Car</span>
+              <span class="ai-stat-val" id="aiMostBooked">—</span>
+              <span class="ai-stat-subtitle" id="aiMostBookedCount">0 bookings</span>
+            </div>
+            <div class="ai-stat-card">
+              <span class="ai-stat-title">Least Booked Car</span>
+              <span class="ai-stat-val" id="aiLeastBooked">—</span>
+              <span class="ai-stat-subtitle" id="aiLeastBookedCount">0 bookings</span>
+            </div>
+            <div class="ai-stat-card">
+              <span class="ai-stat-title">Highest Rated Car</span>
+              <span class="ai-stat-val" id="aiHighestRated">—</span>
+              <span class="ai-stat-subtitle" id="aiHighestRatedScore">0.0 rating</span>
+            </div>
+            <div class="ai-stat-card">
+              <span class="ai-stat-title">Most Active User</span>
+              <span class="ai-stat-val" id="aiActiveUser">—</span>
+              <span class="ai-stat-subtitle" id="aiActiveUserCount">0 bookings</span>
+            </div>
+            <div class="ai-stat-card">
+              <span class="ai-stat-title">Avg Booking Length</span>
+              <span class="ai-stat-val" id="aiAvgDuration">0 days</span>
+              <span class="ai-stat-subtitle">per transaction</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Textual AI Recommendations -->
+          <div class="ai-insights-container" id="aiInsightsContainer">
+            <div class="ai-thinking">
+              <div class="brain-glow-wrap">
+                <div class="brain-pulse-ring"></div>
+                <i class="fas fa-brain"></i>
+              </div>
+              <span class="ai-thinking-text">AI is running analytical telemetry algorithms...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Container for Actions -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Chart.js CDN dependency -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+  <!-- BUSINESS INTELLIGENCE SCRIPT -->
+  <script>
+    const BACKEND_URL = "http://localhost:8080/api";
+
+    // Fallback data in case the Spring Boot API is offline
+    const MOCK_USERS = [
+      { id: 1, name: "System Administrator", email: "admin@rentalcar.ai", phone: "+91 98765 43210", city: "Bangalore" },
+      { id: 2, name: "Aarav Sharma", email: "aarav@gmail.com", phone: "+91 99887 76655", city: "Mumbai" },
+      { id: 3, name: "Isha Patel", email: "isha.patel@yahoo.com", phone: "+91 98234 56789", city: "Delhi" },
+      { id: 4, name: "Rohan Das", email: "rohan.das@outlook.com", phone: "+91 97112 23344", city: "Kolkata" },
+      { id: 5, name: "Priya Nair", email: "priya.nair@gmail.com", phone: "+91 96000 11122", city: "Chennai" }
+    ];
+
+    const MOCK_CARS = [
+      { id: 101, brand: "BMW", model: "3 Series", pricePerDay: 6500, year: 2025, seats: 5, fuelType: "Petrol", transmission: "Automatic", status: "Available", rating: 4.8, imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500&q=80" },
+      { id: 102, brand: "Tesla", model: "Model 3", pricePerDay: 8900, year: 2025, seats: 5, fuelType: "Electric", transmission: "Automatic", status: "Booked", rating: 4.9, imageUrl: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80" },
+      { id: 103, brand: "Toyota", model: "Fortuner", pricePerDay: 4800, year: 2024, seats: 7, fuelType: "Diesel", transmission: "Automatic", status: "Available", rating: 4.7, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&q=80" },
+      { id: 104, brand: "Hyundai", model: "i20", pricePerDay: 1299, year: 2024, seats: 5, fuelType: "Petrol", transmission: "Manual", status: "Available", rating: 4.3, imageUrl: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80" },
+      { id: 105, brand: "Mercedes", model: "GLE SUV", pricePerDay: 12500, year: 2025, seats: 5, fuelType: "Diesel", transmission: "Automatic", status: "Booked", rating: 4.9, imageUrl: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=500&q=80" },
+      { id: 106, brand: "Kia", model: "Seltos", pricePerDay: 2800, year: 2024, seats: 5, fuelType: "Petrol", transmission: "Automatic", status: "Available", rating: 4.5, imageUrl: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80" }
+    ];
+
+    const MOCK_BOOKINGS = [
+      { id: 501, userId: 2, carId: 101, pickupDate: "2026-01-10", returnDate: "2026-01-15", bookingStatus: "Completed", bookedOn: "2026-01-08" },
+      { id: 502, userId: 3, carId: 102, pickupDate: "2026-01-20", returnDate: "2026-01-25", bookingStatus: "Completed", bookedOn: "2026-01-18" },
+      { id: 503, userId: 4, carId: 103, pickupDate: "2026-02-05", returnDate: "2026-02-12", bookingStatus: "Completed", bookedOn: "2026-02-03" },
+      { id: 504, userId: 2, carId: 104, pickupDate: "2026-02-15", returnDate: "2026-02-18", bookingStatus: "Cancelled", bookedOn: "2026-02-12" },
+      { id: 505, userId: 5, carId: 105, pickupDate: "2026-03-01", returnDate: "2026-03-05", bookingStatus: "Completed", bookedOn: "2026-02-28" },
+      { id: 506, userId: 3, carId: 106, pickupDate: "2026-03-10", returnDate: "2026-03-15", bookingStatus: "Completed", bookedOn: "2026-03-08" },
+      { id: 507, userId: 4, carId: 101, pickupDate: "2026-04-12", returnDate: "2026-04-18", bookingStatus: "Completed", bookedOn: "2026-04-10" },
+      { id: 508, userId: 2, carId: 102, pickupDate: "2026-04-20", returnDate: "2026-04-22", bookingStatus: "Completed", bookedOn: "2026-04-19" },
+      { id: 509, userId: 5, carId: 103, pickupDate: "2026-05-02", returnDate: "2026-05-09", bookingStatus: "Completed", bookedOn: "2026-04-30" },
+      { id: 510, userId: 3, carId: 104, pickupDate: "2026-05-15", returnDate: "2026-05-20", bookingStatus: "Completed", bookedOn: "2026-05-12" },
+      { id: 511, userId: 4, carId: 105, pickupDate: "2026-06-01", returnDate: "2026-06-10", bookingStatus: "Booked", bookedOn: "2026-05-28" },
+      { id: 512, userId: 2, carId: 106, pickupDate: "2026-06-12", returnDate: "2026-06-16", bookingStatus: "Booked", bookedOn: "2026-06-10" },
+      { id: 513, userId: 5, carId: 101, pickupDate: "2026-06-18", returnDate: "2026-06-25", bookingStatus: "Cancelled", bookedOn: "2026-06-15" }
+    ];
+
+    // Local data buffers
+    let globalCars = [];
+    let globalUsers = [];
+    let globalBookings = [];
+    let carMap = {};
+    let userMap = {};
+
+    // Chart instances references
+    let chartBookingsInstance = null;
+    let chartRevenueInstance = null;
+    let chartStatusInstance = null;
+    let chartTopCarsInstance = null;
+
+    /**
+     * Show nice notification toast
+     */
+    function showToast(message, color = "#22c55e") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.innerHTML = `<i class="fas fa-check-circle" style="color:${color};"></i>${message}`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    /**
+     * Helper to compute reservation durations
+     */
+    function calculateDays(pickupStr, returnStr) {
+      const pickup = new Date(pickupStr);
+      const returnD = new Date(returnStr);
+      if (isNaN(pickup.getTime()) || isNaN(returnD.getTime())) return 0;
+      let diff = returnD - pickup;
+      let days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      return days <= 0 ? 1 : days;
+    }
+
+    /**
+     * Helper to calculate booking revenue
+     */
+    function getBookingRevenue(b) {
+      if (b.bookingStatus === 'Cancelled') return 0;
+      const days = calculateDays(b.pickupDate, b.returnDate);
+      const car = carMap[b.carId];
+      return days * (car ? (car.pricePerDay || 0) : 0);
+    }
+
+    /**
+     * Fetch raw data from endpoints, falls back to mocks if offline
+     */
+    async function loadData() {
+      try {
+        const [resCars, resUsers, resBookings] = await Promise.all([
+          fetch(`${BACKEND_URL}/cars`),
+          fetch(`${BACKEND_URL}/users`),
+          fetch(`${BACKEND_URL}/bookings`)
+        ]);
+
+        if (resCars.ok && resUsers.ok && resBookings.ok) {
+          globalCars = await resCars.json();
+          globalUsers = await resUsers.json();
+          globalBookings = await resBookings.json();
+          showToast("Live telemetry loaded from database!");
+        } else {
+          throw new Error("HTTP endpoints returned non-200 responses.");
+        }
+      } catch (err) {
+        console.warn("Spring Boot service down. Booting mock telemetry fallback data.", err);
+        globalCars = [...MOCK_CARS];
+        globalUsers = [...MOCK_USERS];
+        globalBookings = [...MOCK_BOOKINGS];
+        showToast("Mock offline telemetry loaded.", "#f59e0b");
+      }
+
+      // Re-compile maps
+      carMap = {};
+      globalCars.forEach(c => carMap[c.id] = c);
+      userMap = {};
+      globalUsers.forEach(u => userMap[u.id] = u);
+
+      // Render details
+      calculateKPIs();
+      renderCharts();
+      generateAIInsights();
+    }
+
+    /**
+     * Compute KPI cards totals
+     */
+    function calculateKPIs() {
+      // 1. Total revenue
+      let totalRevenue = 0;
+      globalBookings.forEach(b => {
+        totalRevenue += getBookingRevenue(b);
+      });
+      document.getElementById('kpiRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
+
+      // 2. Total bookings count
+      document.getElementById('kpiBookings').textContent = globalBookings.length;
+
+      // 3. Total cars registered
+      document.getElementById('kpiCars').textContent = globalCars.length;
+
+      // 4. Total users registered
+      document.getElementById('kpiUsers').textContent = globalUsers.length;
+
+      // 5. Available cars count
+      const availableCount = globalCars.filter(c => c.status === "Available").length;
+      document.getElementById('kpiAvailable').textContent = availableCount;
+
+      // 6. Cancelled bookings
+      const cancelledCount = globalBookings.filter(b => b.bookingStatus === "Cancelled").length;
+      document.getElementById('kpiCancelled').textContent = cancelledCount;
+    }
+
+    /**
+     * Configure and paint Chart.js graphs
+     */
+    function renderCharts() {
+      // Chart.js global configuration defaults for premium design aesthetics
+      Chart.defaults.color = '#7a8499';
+      Chart.defaults.font.family = "'Inter', sans-serif";
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthlyBookings = new Array(12).fill(0);
+      const monthlyRevenue = new Array(12).fill(0);
+
+      // Aggregate bookings and revenue by month
+      globalBookings.forEach(b => {
+        if (!b.pickupDate) return;
+        const d = new Date(b.pickupDate);
+        if (isNaN(d.getTime())) return;
+        const month = d.getMonth();
+        monthlyBookings[month]++;
+        if (b.bookingStatus !== 'Cancelled') {
+          monthlyRevenue[month] += getBookingRevenue(b);
+        }
+      });
+
+      // 1. Monthly Bookings volume chart
+      const ctxBookings = document.getElementById('bookingsChart').getContext('2d');
+      if (chartBookingsInstance) chartBookingsInstance.destroy();
+      chartBookingsInstance = new Chart(ctxBookings, {
+        type: 'bar',
+        data: {
+          labels: monthNames,
+          datasets: [{
+            label: 'Bookings Count',
+            data: monthlyBookings,
+            backgroundColor: 'rgba(200, 168, 75, 0.75)',
+            borderColor: '#c8a84b',
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+
+      // 2. Revenue curves chart
+      const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+      if (chartRevenueInstance) chartRevenueInstance.destroy();
+      
+      // Setup line gradient
+      const grad = ctxRevenue.createLinearGradient(0, 0, 0, 250);
+      grad.addColorStop(0, 'rgba(200, 168, 75, 0.25)');
+      grad.addColorStop(1, 'rgba(200, 168, 75, 0)');
+
+      chartRevenueInstance = new Chart(ctxRevenue, {
+        type: 'line',
+        data: {
+          labels: monthNames,
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: monthlyRevenue,
+            backgroundColor: grad,
+            borderColor: '#c8a84b',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#c8a84b',
+            pointBorderColor: '#080c14',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+          }
+        }
+      });
+
+      // 3. Booking Status doughnut chart
+      let completed = 0, active = 0, cancelled = 0;
+      globalBookings.forEach(b => {
+        if (b.bookingStatus === 'Completed') completed++;
+        else if (b.bookingStatus === 'Cancelled') cancelled++;
+        else active++; // Confirmed or Booked
+      });
+
+      const ctxStatus = document.getElementById('statusChart').getContext('2d');
+      if (chartStatusInstance) chartStatusInstance.destroy();
+      chartStatusInstance = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'Active Bookings', 'Cancelled'],
+          datasets: [{
+            data: [completed, active, cancelled],
+            backgroundColor: [
+              'rgba(34, 197, 94, 0.75)',  // green
+              'rgba(200, 168, 75, 0.75)',  // gold
+              'rgba(232, 69, 69, 0.75)'   // red
+            ],
+            borderColor: '#0d1421',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { boxWidth: 12, padding: 15 }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+
+      // 4. Top Booked Vehicles horizontal bar chart
+      const bookingsCountByCar = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingsCountByCar[b.carId] = (bookingsCountByCar[b.carId] || 0) + 1;
+        }
+      });
+
+      const sortedCarIds = Object.keys(bookingsCountByCar).sort((a, b) => bookingsCountByCar[b] - bookingsCountByCar[a]);
+      const topCarNames = [];
+      const topCarBookings = [];
+
+      sortedCarIds.slice(0, 5).forEach(cid => {
+        const car = carMap[cid];
+        topCarNames.push(car ? `${car.brand} ${car.model}` : `Car #${cid}`);
+        topCarBookings.push(bookingsCountByCar[cid]);
+      });
+
+      // If no bookings, default blank display
+      if (topCarNames.length === 0) {
+        topCarNames.push("No Bookings Logged");
+        topCarBookings.push(0);
+      }
+
+      const ctxTopCars = document.getElementById('topCarsChart').getContext('2d');
+      if (chartTopCarsInstance) chartTopCarsInstance.destroy();
+      chartTopCarsInstance = new Chart(ctxTopCars, {
+        type: 'bar',
+        data: {
+          labels: topCarNames,
+          datasets: [{
+            data: topCarBookings,
+            backgroundColor: 'rgba(59, 130, 246, 0.75)', // blue gradient
+            borderColor: '#3b82f6',
+            borderWidth: 1.5,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { precision: 0 }
+            },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    /**
+     * Compute and output AI Telemetry, summaries, and smart insights list
+     */
+    function generateAIInsights() {
+      // 1. Calculate bookings frequency per car
+      const bookingsCountByCar = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingsCountByCar[b.carId] = (bookingsCountByCar[b.carId] || 0) + 1;
+        }
+      });
+
+      // 2. Identify Most & Least Booked
+      let mostBookedCarId = null, maxCount = -1;
+      let leastBookedCarId = null, minCount = Infinity;
+
+      // Find most booked
+      Object.keys(bookingsCountByCar).forEach(cid => {
+        if (bookingsCountByCar[cid] > maxCount) {
+          maxCount = bookingsCountByCar[cid];
+          mostBookedCarId = cid;
+        }
+      });
+
+      // Find least booked (incorporating the entire fleet registry)
+      if (globalCars.length > 0) {
+        globalCars.forEach(car => {
+          const count = bookingsCountByCar[car.id] || 0;
+          if (count < minCount) {
+            minCount = count;
+            leastBookedCarId = car.id;
+          }
+        });
+      }
+
+      const mostBookedCar = mostBookedCarId && carMap[mostBookedCarId] ? carMap[mostBookedCarId] : null;
+      const leastBookedCar = leastBookedCarId && carMap[leastBookedCarId] ? carMap[leastBookedCarId] : null;
+
+      document.getElementById('aiMostBooked').textContent = mostBookedCar ? `${mostBookedCar.brand} ${mostBookedCar.model}` : "No Data";
+      document.getElementById('aiMostBookedCount').textContent = mostBookedCar ? `${maxCount} reservations` : "0 reservations";
+
+      document.getElementById('aiLeastBooked').textContent = leastBookedCar ? `${leastBookedCar.brand} ${leastBookedCar.model}` : "No Data";
+      document.getElementById('aiLeastBookedCount').textContent = leastBookedCar ? `${minCount} reservations` : "0 reservations";
+
+      // 3. Find highest rated vehicle
+      let highestRatedCar = null, maxRating = -1;
+      globalCars.forEach(c => {
+        if (c.rating && c.rating > maxRating) {
+          maxRating = c.rating;
+          highestRatedCar = c;
+        }
+      });
+      document.getElementById('aiHighestRated').textContent = highestRatedCar ? `${highestRatedCar.brand} ${highestRatedCar.model}` : "No Data";
+      document.getElementById('aiHighestRatedScore').textContent = highestRatedCar ? `${highestRatedCar.rating.toFixed(1)} rating` : "0.0 rating";
+
+      // 4. Identify most active client
+      const bookingsCountByUser = {};
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          bookingsCountByUser[b.userId] = (bookingsCountByUser[b.userId] || 0) + 1;
+        }
+      });
+
+      let topUserId = null, maxUserCount = -1;
+      Object.keys(bookingsCountByUser).forEach(uid => {
+        if (bookingsCountByUser[uid] > maxUserCount) {
+          maxUserCount = bookingsCountByUser[uid];
+          topUserId = uid;
+        }
+      });
+
+      const topUser = topUserId && userMap[topUserId] ? userMap[topUserId] : null;
+      document.getElementById('aiActiveUser').textContent = topUser ? topUser.name : "No Data";
+      document.getElementById('aiActiveUserCount').textContent = topUser ? `${maxUserCount} rentals booked` : "0 rentals booked";
+
+      // 5. Avg booking duration span
+      let totalDays = 0, countActive = 0;
+      globalBookings.forEach(b => {
+        if (b.bookingStatus !== 'Cancelled') {
+          totalDays += calculateDays(b.pickupDate, b.returnDate);
+          countActive++;
+        }
+      });
+      const avgDuration = countActive > 0 ? (totalDays / countActive).toFixed(1) : 0;
+      document.getElementById('aiAvgDuration').textContent = `${avgDuration} days`;
+
+      // 6. Generate natural language AI Insights recommendations
+      const totalCarsCount = globalCars.length;
+      const bookedCarsCount = globalCars.filter(c => c.status === "Booked").length;
+      const occupancyPercent = totalCarsCount > 0 ? Math.round((bookedCarsCount / totalCarsCount) * 100) : 0;
+
+      const insights = [];
+
+      // Occupancy insight
+      if (occupancyPercent >= 70) {
+        insights.push({
+          type: "danger",
+          icon: "fa-exclamation-triangle",
+          title: "Critical Fleet Capacity Squeeze",
+          desc: `Current fleet occupancy stands at an extreme ${occupancyPercent}% (${bookedCarsCount}/${totalCarsCount} active vehicles). Recommended action: Acquire new assets within high-demand classes (e.g. SUVs) or configure dynamic price surcharges to maximize earnings.`
+        });
+      } else if (occupancyPercent <= 30 && totalCarsCount > 0) {
+        insights.push({
+          type: "warning",
+          icon: "fa-tags",
+          title: "Low Fleet Asset Utilization",
+          desc: `Fleet occupancy is low at ${occupancyPercent}% (${bookedCarsCount} of ${totalCarsCount} rented). Action point: Deploy dynamic mid-week promotional codes (e.g. 15% discount) to stimulate reservation velocity.`
+        });
+      } else {
+        insights.push({
+          type: "success",
+          icon: "fa-check-circle",
+          title: "Optimal Fleet Utilization",
+          desc: `Active fleet occupancy is at a healthy ${occupancyPercent}% equilibrium. Balance is maintained; continue standard rates structure and seasonal marketing strategies.`
+        });
+      }
+
+      // Most Booked insight
+      if (mostBookedCar) {
+        insights.push({
+          type: "info",
+          icon: "fa-crown",
+          title: `Highest Demand Asset: ${mostBookedCar.brand} ${mostBookedCar.model}`,
+          desc: `This model completed ${maxCount} rentals. We advise increasing inventory for matching class segments or applying standard weekend surcharges for this vehicle.`
+        });
+      }
+
+      // Least Booked insight
+      if (leastBookedCar && leastBookedCarId !== mostBookedCarId) {
+        insights.push({
+          type: "warning",
+          icon: "fa-arrow-down",
+          title: `Underutilized Asset: ${leastBookedCar.brand} ${leastBookedCar.model}`,
+          desc: `This model has registered low customer booking volume (${minCount} rentals). Actionable solution: Offer custom promotional deals or lower daily prices on this car by 10% to boost attractiveness.`
+        });
+      }
+
+      // VIP loyalty insight
+      if (topUser) {
+        insights.push({
+          type: "success",
+          icon: "fa-user-check",
+          title: `VIP Loyalty Retention Program`,
+          desc: `Registered customer <strong>${topUser.name}</strong> (${topUser.email}) represents highest lifetime bookings value with ${maxUserCount} rentals. Consider rewarding them with a loyalty coupon.`
+        });
+      }
+
+      // Render insights list
+      const container = document.getElementById('aiInsightsContainer');
+      container.innerHTML = insights.map(ins => `
+        <div class="ai-insight-item">
+          <div class="ai-insight-icon ${ins.type}">
+            <i class="fas ${ins.icon}"></i>
+          </div>
+          <div class="ai-insight-text">
+            <span class="ai-insight-item-title">${ins.title}</span>
+            <span class="ai-insight-item-desc">${ins.desc}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * CSV Export compiler & trigger functions
+     */
+    function triggerDownload(filename, csvData) {
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast(`Exported ${filename} successfully!`);
+    }
+
+    function exportCarsReport() {
+      if (!globalCars.length) {
+        showToast("No cars data loaded to export", "#e84545");
+        return;
+      }
+      let csv = "Car ID,Brand,Model,Year,Seats,Fuel Type,Transmission,Daily Rate (INR),Rating,Status\n";
+      globalCars.forEach(c => {
+        csv += `"${c.id}","${c.brand}","${c.model}","${c.year || ''}","${c.seats || ''}","${c.fuelType || ''}","${c.transmission || ''}","${c.pricePerDay || 0}","${c.rating || 0}","${c.status || ''}"\n`;
+      });
+      triggerDownload("RentalCarAI_Cars_Report.csv", csv);
+    }
+
+    function exportBookingsReport() {
+      if (!globalBookings.length) {
+        showToast("No bookings data loaded to export", "#e84545");
+        return;
+      }
+      let csv = "Booking ID,User Name,User Email,Car Booked,Daily Rate (INR),Pickup Date,Return Date,Duration (Days),Calculated Revenue (INR),Status\n";
+      globalBookings.forEach(b => {
+        const user = userMap[b.userId] || { name: `User #${b.userId}`, email: "N/A" };
+        const car = carMap[b.carId] || { brand: `Car #${b.carId}`, model: "", pricePerDay: 0 };
+        const days = calculateDays(b.pickupDate, b.returnDate);
+        const rev = getBookingRevenue(b);
+        csv += `"${b.id}","${user.name}","${user.email}","${car.brand} ${car.model}","${car.pricePerDay || 0}","${b.pickupDate}","${b.returnDate}","${days}","${rev}","${b.bookingStatus || ''}"\n`;
+      });
+      triggerDownload("RentalCarAI_Bookings_Report.csv", csv);
+    }
+
+    function exportUsersReport() {
+      if (!globalUsers.length) {
+        showToast("No users data loaded to export", "#e84545");
+        return;
+      }
+      let csv = "User ID,Full Name,Email Address,Phone Number,City Location\n";
+      globalUsers.forEach(u => {
+        csv += `"${u.id}","${u.name || ''}","${u.email || ''}","${u.phone || ''}","${u.city || ''}"\n`;
+      });
+      triggerDownload("RentalCarAI_Users_Report.csv", csv);
+    }
+
+    // Initialize application
+    document.addEventListener("DOMContentLoaded", () => {
+      loadData();
+    });
+  </script>
+</body>
+
+</html>

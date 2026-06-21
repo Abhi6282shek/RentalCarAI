@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Browse Cars — RentalCar AI</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080c14;--bg2:#0d1421;--bg3:#111827;
+  --card:rgba(255,255,255,0.04);--glass:rgba(255,255,255,0.08);
+  --gold:#c8a84b;--gold-dim:rgba(200,168,75,0.15);--gold-glow:rgba(200,168,75,0.3);
+  --txt:#f0f0f0;--muted:#7a8499;--dim:#4a5568;
+  --green:#22c55e;--red:#e84545;--blue:#3b82f6;--orange:#f59e0b;
+  --radius:14px;--radius-sm:8px;--transition:all .3s ease;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+/* SIDEBAR */
+.sidebar{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--glass);height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s;}
+.sb-brand{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--glass);}
+.sb-brand a{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--txt);text-decoration:none;}
+.sb-brand span{color:var(--gold);}
+.sb-user{padding:1.1rem 1.5rem;border-bottom:1px solid var(--glass);display:flex;align-items:center;gap:.75rem;}
+.sb-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-dim);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--gold);flex-shrink:0;}
+.sb-name{font-size:.83rem;font-weight:600;line-height:1.2;}
+.sb-role{font-size:.68rem;color:var(--muted);}
+.sb-nav{flex:1;padding:.8rem 0;overflow-y:auto;}
+.sb-section{font-size:.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--dim);padding:.4rem 1.5rem;font-weight:600;margin-top:.4rem;}
+.sb-link{display:flex;align-items:center;gap:.75rem;padding:.72rem 1.5rem;font-size:.82rem;color:var(--muted);text-decoration:none;transition:all .2s;border-left:3px solid transparent;}
+.sb-link:hover{color:var(--txt);background:rgba(255,255,255,.03);}
+.sb-link.active{color:var(--gold);background:var(--gold-dim);border-left-color:var(--gold);}
+.sb-link i{width:15px;text-align:center;font-size:.82rem;}
+.sb-bottom{padding:1rem 1.5rem;border-top:1px solid var(--glass);}
+.btn-logout{display:flex;align-items:center;gap:.65rem;color:var(--muted);font-size:.82rem;padding:.55rem .75rem;border-radius:8px;cursor:pointer;transition:all .2s;background:none;border:none;width:100%;font-family:'Inter',sans-serif;}
+.btn-logout:hover{color:var(--red);background:rgba(232,69,69,.07);}
+
+/* MAIN */
+.main{margin-left:240px;min-height:100vh;}
+.topbar{background:rgba(8,12,20,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.pg-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;}
+.tb-right{display:flex;align-items:center;gap:.9rem;}
+.icon-btn{width:34px;height:34px;background:var(--card);border:1px solid var(--glass);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:all .2s;font-size:.82rem;text-decoration:none;}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* CONTENT */
+.content{padding:2rem;}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:2rem;}
+.page-header h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.3rem;}
+.page-header p{font-size:.85rem;color:var(--muted);}
+.header-stats{display:flex;gap:2rem;margin-top:1rem;flex-wrap:wrap;}
+.hstat strong{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--gold);line-height:1;display:block;}
+.hstat span{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+
+/* FILTER TABS */
+.filter-tabs{display:flex;align-items:center;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.ftab{background:var(--card);border:1px solid var(--glass);color:var(--muted);border-radius:8px;padding:.4rem 1.1rem;font-size:.8rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;}
+.ftab:hover{border-color:rgba(200,168,75,.25);color:var(--txt);}
+.ftab.active{background:var(--gold-dim);border-color:rgba(200,168,75,.35);color:var(--gold);}
+.ftab .cnt{background:rgba(255,255,255,.08);border-radius:10px;padding:.08rem .45rem;font-size:.68rem;}
+.ftab.active .cnt{background:rgba(200,168,75,.2);}
+.filter-right{margin-left:auto;display:flex;align-items:center;gap:.6rem;}
+.search-wrap{position:relative;}
+.csearch{background:rgba(255,255,255,.04);border:1px solid var(--glass);color:var(--txt);border-radius:8px;padding:.4rem 1rem .4rem 2.4rem;font-size:.8rem;font-family:'Inter',sans-serif;outline:none;transition:all .3s;width:200px;}
+.csearch:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.csearch::placeholder{color:var(--dim);}
+.csearch-icon{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.75rem;pointer-events:none;}
+.sort-sel{background:rgba(255,255,255,.04);border:1px solid var(--glass);color:var(--txt);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;font-family:'Inter',sans-serif;outline:none;cursor:pointer;transition:border-color .2s;}
+.sort-sel:focus{border-color:var(--gold);}
+.view-toggle{display:flex;background:var(--card);border:1px solid var(--glass);border-radius:8px;overflow:hidden;}
+.vbtn{background:transparent;border:none;color:var(--muted);padding:.4rem .7rem;cursor:pointer;transition:all .2s;font-size:.85rem;line-height:1;}
+.vbtn.active,.vbtn:hover{background:var(--gold-dim);color:var(--gold);}
+
+/* LAYOUT: sidebar + grid */
+.cars-wrap{display:flex;gap:1.5rem;align-items:flex-start;}
+.filter-sidebar{width:220px;min-width:220px;background:var(--card);border:1px solid var(--glass);border-radius:var(--radius);padding:1.3rem;position:sticky;top:5rem;}
+.fs-title{font-size:.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:1.2rem;}
+.fg{border-bottom:1px solid var(--glass);padding-bottom:1rem;margin-bottom:1rem;}
+.fg:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.fg-label{font-size:.75rem;font-weight:600;color:var(--txt);margin-bottom:.65rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.fg-label i{color:var(--muted);font-size:.65rem;}
+.fcheck{display:flex;align-items:center;gap:.55rem;margin-bottom:.45rem;}
+.fcheck input{width:14px;height:14px;accent-color:var(--gold);cursor:pointer;}
+.fcheck label{font-size:.78rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:space-between;flex:1;}
+.fcheck label:hover{color:var(--txt);}
+.fcnt{font-size:.67rem;color:var(--dim);background:rgba(255,255,255,.05);padding:.05rem .4rem;border-radius:10px;}
+.price-range input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;}
+.range-row{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);margin-top:.3rem;}
+.range-row #priceVal{color:var(--gold);font-weight:600;}
+.btn-apply{width:100%;background:var(--gold);color:#000;border:none;border-radius:8px;padding:.6rem;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .2s;margin-bottom:.5rem;font-family:'Inter',sans-serif;}
+.btn-apply:hover{background:#e0b84f;}
+.btn-reset{width:100%;background:transparent;border:1px solid var(--glass);color:var(--muted);border-radius:8px;padding:.55rem;font-size:.8rem;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.btn-reset:hover{border-color:var(--gold-glow);color:var(--gold);}
+
+/* CARS GRID */
+.cars-grid-wrap{flex:1;min-width:0;}
+.result-info{font-size:.8rem;color:var(--muted);margin-bottom:1.2rem;}
+.result-info strong{color:var(--txt);}
+.cars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.cars-grid.list-mode{grid-template-columns:1fr;}
+.cars-grid.two-col{grid-template-columns:repeat(2,1fr);}
+
+/* CAR CARD */
+.car-card{background:var(--card);border:1px solid var(--glass);border-radius:var(--radius);overflow:hidden;transition:all .3s;cursor:pointer;display:flex;flex-direction:column;position:relative;}
+.car-card:hover{border-color:rgba(200,168,75,.25);box-shadow:0 8px 30px rgba(0,0,0,.35);transform:translateY(-3px);}
+.car-card.featured{border-color:rgba(200,168,75,.3);}
+.featured-ribbon{position:absolute;top:.8rem;left:.8rem;background:var(--gold);color:#000;font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:4px;z-index:3;}
+
+/* card image */
+.cc-img{position:relative;height:190px;overflow:hidden;background:var(--bg3);}
+.cc-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;display:block;}
+.car-card:hover .cc-img img{transform:scale(1.06);}
+.cc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.5) 100%);pointer-events:none;}
+.cc-fuel{position:absolute;top:.75rem;left:.75rem;background:rgba(8,12,20,.8);backdrop-filter:blur(6px);border:1px solid var(--gold-glow);color:var(--gold);font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:20px;display:flex;align-items:center;gap:.3rem;letter-spacing:.04em;z-index:2;}
+.cc-fav{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;background:rgba(8,12,20,.75);backdrop-filter:blur(6px);border:1px solid var(--glass);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.82rem;cursor:pointer;z-index:2;transition:all .2s;}
+.cc-fav:hover,.cc-fav.active{color:#e05252;background:rgba(224,82,82,.12);border-color:rgba(224,82,82,.3);}
+.cc-avail{position:absolute;bottom:.75rem;left:.75rem;font-size:.63rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;z-index:2;}
+.avail-yes{background:rgba(34,197,94,.18);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.avail-few{background:rgba(245,158,11,.15);color:var(--orange);border:1px solid rgba(245,158,11,.3);}
+
+/* card body */
+.cc-body{padding:1.1rem 1.2rem 1.2rem;display:flex;flex-direction:column;flex:1;}
+.cc-brand{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.15rem;}
+.cc-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--txt);line-height:1.2;margin-bottom:.4rem;}
+.cc-rating{display:flex;align-items:center;gap:.35rem;margin-bottom:.8rem;}
+.cc-stars{color:var(--gold);font-size:.8rem;}
+.cc-rcount{font-size:.68rem;color:var(--muted);}
+.cc-specs{display:flex;gap:.4rem;margin-bottom:.95rem;}
+.spec-pill{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--glass);border-radius:8px;padding:.4rem .5rem;flex:1;gap:.12rem;}
+.spec-pill i{color:var(--gold);font-size:.72rem;}
+.spec-pill strong{font-size:.72rem;color:var(--txt);font-weight:600;line-height:1;}
+.spec-pill span{font-size:.6rem;color:var(--muted);line-height:1;}
+.cc-footer{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:auto;padding-top:.9rem;border-top:1px solid var(--glass);}
+.cc-price{}
+.cc-old{font-size:.68rem;color:var(--dim);text-decoration:line-through;line-height:1;}
+.cc-num{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;color:var(--txt);line-height:1.1;}
+.cc-num small{font-size:.7rem;font-weight:400;color:var(--muted);}
+.btn-book{background:var(--gold);color:#000;border:none;border-radius:8px;font-size:.76rem;font-weight:700;padding:.42rem 1rem;text-decoration:none;transition:background .2s,transform .15s;display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap;font-family:'Inter',sans-serif;}
+.btn-book:hover{background:#e0b84f;color:#000;transform:translateY(-1px);}
+
+/* LIST MODE CARD */
+.cars-grid.list-mode .car-card{flex-direction:row;}
+.cars-grid.list-mode .cc-img{width:200px;min-width:200px;height:auto;}
+.cars-grid.list-mode .cc-body{padding:1.2rem 1.4rem;}
+
+/* PAGINATION */
+.pag-wrap{display:flex;justify-content:center;gap:.3rem;margin-top:2rem;}
+.pag-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--glass);border-radius:8px;color:var(--muted);font-size:.82rem;cursor:pointer;text-decoration:none;transition:all .2s;}
+.pag-btn:hover{border-color:var(--gold-glow);color:var(--gold);}
+.pag-btn.active{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700;}
+.pag-btn.disabled{opacity:.3;pointer-events:none;}
+
+/* MOBILE DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;}
+.drawer-overlay.open{display:flex;align-items:flex-end;}
+.drawer{background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--glass);padding:1.4rem 1.4rem 2.5rem;width:100%;max-height:88vh;overflow-y:auto;}
+.drawer-handle{width:36px;height:4px;background:var(--glass);border-radius:2px;margin:0 auto 1.3rem;}
+
+/* TOAST */
+.tc{position:fixed;bottom:2rem;right:2rem;z-index:9999;}
+.tm{background:rgba(8,12,20,.95);border:1px solid var(--glass);backdrop-filter:blur(20px);border-radius:10px;padding:.85rem 1.2rem;font-size:.83rem;display:flex;align-items:center;gap:.6rem;animation:si .3s ease;min-width:220px;margin-bottom:.4rem;}
+@keyframes si{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+@media(max-width:1200px){.cars-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:992px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .topbar{padding:1rem;}
+  .filter-sidebar{display:none;}
+  .cars-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .cars-grid,.cars-grid.two-col{grid-template-columns:1fr;}
+  .content{padding:1rem;}
+  .cars-grid.list-mode .car-card{flex-direction:column;}
+  .cars-grid.list-mode .cc-img{width:100%;height:180px;}
+  .filter-tabs{gap:.25rem;}
+  .filter-right{margin-left:0;width:100%;}
+  .csearch{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-brand"><a href="index.html">Rental<span>Car</span> <span style="color:var(--muted);font-size:.68rem;vertical-align:middle;">AI</span></a></div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">R</div>
+    <div><div class="sb-name" id="sbName">Loading…</div><div class="sb-role">Member</div></div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Main</div>
+    <a class="sb-link" href="dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a>
+    <a class="sb-link active" href="cars.html"><i class="fas fa-car"></i>Browse Cars</a>
+    <a class="sb-link" href="favorites.html"><i class="fas fa-heart"></i>Favorites</a>
+    <a class="sb-link" href="my-bookings.html"><i class="fas fa-calendar-alt"></i>My Bookings</a>
+    <div class="sb-section">Tools</div>
+    <a class="sb-link" href="ai-recommendation.html"><i class="fas fa-robot"></i>AI Recommender</a>
+    <a class="sb-link" href="#"><i class="fas fa-bell"></i>Notifications</a>
+    <div class="sb-section">Support</div>
+    <a class="sb-link" href="about.html"><i class="fas fa-info-circle"></i>About Us</a>
+    <a class="sb-link" href="contact.html"><i class="fas fa-envelope"></i>Contact Us</a>
+    <div class="sb-section">Account</div>
+    <a class="sb-link" href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+    <a class="sb-link" href="admin.html"><i class="fas fa-user-shield"></i>Admin Panel</a>
+    <a class="sb-link" href="#"><i class="fas fa-cog"></i>Settings</a>
+  </div>
+  <div class="sb-bottom">
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Sign Out</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="icon-btn d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+      <div class="pg-title">Browse Cars</div>
+    </div>
+    <div class="tb-right">
+      <button class="icon-btn d-lg-none" id="mobileFilterBtn"><i class="fas fa-sliders-h"></i></button>
+      <div class="sb-avatar" id="topAvatar" style="cursor:pointer;">R</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h2>Our <span style="color:var(--gold)">Fleet</span></h2>
+      <p>Handpicked vehicles across every class — reserve yours in seconds.</p>
+      <div class="header-stats">
+        <div class="hstat"><strong>500+</strong><span>Vehicles</span></div>
+        <div class="hstat"><strong>80</strong><span>Cities</span></div>
+        <div class="hstat"><strong>4.9★</strong><span>Avg Rating</span></div>
+        <div class="hstat"><strong>24/7</strong><span>Support</span></div>
+      </div>
+    </div>
+
+    <!-- FILTER TABS + TOOLBAR -->
+    <div class="filter-tabs">
+      <button class="ftab active" onclick="setCategory('all',this)"><i class="fas fa-border-all"></i>All <span class="cnt">500</span></button>
+      <button class="ftab" onclick="setCategory('sedan',this)"><i class="fas fa-car-side"></i>Sedan <span class="cnt">95</span></button>
+      <button class="ftab" onclick="setCategory('suv',this)"><i class="fas fa-truck-monster" style="font-size:.7rem"></i>SUV <span class="cnt">80</span></button>
+      <button class="ftab" onclick="setCategory('luxury',this)"><i class="fas fa-gem"></i>Luxury <span class="cnt">55</span></button>
+      <button class="ftab" onclick="setCategory('electric',this)"><i class="fas fa-bolt"></i>Electric <span class="cnt">65</span></button>
+      <button class="ftab" onclick="setCategory('sports',this)"><i class="fas fa-tachometer-alt"></i>Sports <span class="cnt">35</span></button>
+      <div class="filter-right">
+        <div class="search-wrap">
+          <i class="fas fa-search csearch-icon"></i>
+          <input type="text" class="csearch" id="carSearch" placeholder="Search brand or model…" oninput="filterCars()">
+        </div>
+        <select class="sort-sel" id="sortSel" onchange="filterCars()">
+          <option value="recommended">Recommended</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+        <div class="view-toggle">
+          <button class="vbtn active" id="gridVBtn" onclick="setView('grid')" title="Grid"><i class="fas fa-th-large"></i></button>
+          <button class="vbtn" id="listVBtn" onclick="setView('list')" title="List"><i class="fas fa-list"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARS WRAP -->
+    <div class="cars-wrap">
+
+      <!-- FILTER SIDEBAR (desktop) -->
+      <div class="filter-sidebar">
+        <div class="fs-title"><i class="fas fa-sliders-h me-2"></i>Filters</div>
+
+        <div class="fg">
+          <div class="fg-label">Brand <i class="fas fa-chevron-up"></i></div>
+          <div class="fcheck"><input type="checkbox" id="fb-bmw"><label for="fb-bmw">BMW <span class="fcnt">12</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="fb-tesla"><label for="fb-tesla">Tesla <span class="fcnt">8</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="fb-merc"><label for="fb-merc">Mercedes-Benz <span class="fcnt">15</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="fb-audi"><label for="fb-audi">Audi <span class="fcnt">11</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="fb-toyota"><label for="fb-toyota">Toyota <span class="fcnt">22</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="fb-porsche"><label for="fb-porsche">Porsche <span class="fcnt">6</span></label></div>
+        </div>
+
+        <div class="fg">
+          <div class="fg-label">Max Price / day <i class="fas fa-chevron-up"></i></div>
+          <div class="price-range">
+            <input type="range"
+       id="priceRange"
+       min="1000"
+       max="50000"
+       value="10000"
+       oninput="document.getElementById('priceVal').textContent='₹'+this.value">
+            <div class="range-row"><span>₹1000</span><span id="priceVal">₹10000</span><span>₹10000</span></div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <div class="fg-label">Fuel Type <i class="fas fa-chevron-up"></i></div>
+          <div class="fcheck"><input type="checkbox" id="ff-petrol" ><label for="ff-petrol">Petrol <span class="fcnt">180</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="ff-electric"><label for="ff-electric">Electric <span class="fcnt">65</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="ff-hybrid"><label for="ff-hybrid">Hybrid <span class="fcnt">90</span></label></div>
+          <div class="fcheck"><input type="checkbox" id="ff-diesel"><label for="ff-diesel">Diesel <span class="fcnt">70</span></label></div>
+        </div>
+
+        <div class="fg">
+          <div class="fg-label">Min Rating</div>
+          <div class="fcheck"><input type="radio" name="rat" id="r5"><label for="r5">★★★★★ 5.0</label></div>
+          <div class="fcheck"><input type="radio" name="rat" id="r4" checked><label for="r4">★★★★☆ 4.0+</label></div>
+          <div class="fcheck"><input type="radio" name="rat" id="r3"><label for="r3">★★★☆☆ 3.0+</label></div>
+        </div>
+
+        <button class="btn-apply" id="applyBtn">
+    <i class="fas fa-check me-1"></i> Apply
+</button>
+        <button class="btn-reset" onclick="location.reload()"><i class="fas fa-undo me-1"></i>Reset</button>
+      </div>
+
+      <!-- GRID -->
+      <div class="cars-grid-wrap">
+        <div class="result-info">Showing <strong id="resultCount">6</strong> of <strong>500</strong> cars</div>
+        <div class="cars-grid" id="carsGrid">
+
+        </div>
+    <div class="fg">
+      <div class="fg-label">Fuel Type</div>
+      <div class="fcheck"><input type="checkbox" checked><label>Petrol <span class="fcnt">180</span></label></div>
+      <div class="fcheck"><input type="checkbox"><label>Electric <span class="fcnt">65</span></label></div>
+      <div class="fcheck"><input type="checkbox"><label>Hybrid <span class="fcnt">90</span></label></div>
+      <div class="fcheck"><input type="checkbox"><label>Diesel <span class="fcnt">70</span></label></div>
+    </div>
+    <button class="btn-apply"
+    onclick="filterCars(); closeFilters();">
+    <i class="fas fa-check me-1"></i> Apply
+</button>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="components.js"></script>
+<script src="main.js"></script>
+<script>
+function logout(){if(confirm('Sign out?')){localStorage.removeItem('rcai_user');window.location.href='login.html';}}
+function loadUser(){
+  const u=JSON.parse(localStorage.getItem('rcai_user')||'{"name":"Driver"}');
+  const init=(u.name||'D')[0].toUpperCase();
+  if(document.getElementById('sbName'))document.getElementById('sbName').textContent=u.name||'Driver';
+  ['sbAvatar','topAvatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=init;});
+}
+function toast(msg,col='#22c55e'){
+  const c=document.getElementById('tc'),t=document.createElement('div');
+  t.className='tm';t.innerHTML=`<i class="fas fa-check-circle" style="color:${col};"></i>${msg}`;
+  c.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+function toggleFav(el){
+
+    const card = el.closest(".car-card");
+    const carId = card.dataset.id;
+
+    let favs =
+        JSON.parse(localStorage.getItem("favorites")) || [];
+
+    if(favs.includes(carId)){
+
+        favs = favs.filter(id => id !== carId);
+
+        el.classList.remove("active");
+
+        el.innerHTML =
+            '<i class="far fa-heart"></i>';
+
+        toast("Removed from favourites");
+
+    }else{
+
+        favs.push(carId);
+
+        el.classList.add("active");
+
+        el.innerHTML =
+            '<i class="fas fa-heart"></i>';
+
+        toast("Added to favourites");
+    }
+
+    localStorage.setItem(
+        "favorites",
+        JSON.stringify(favs)
+    );
+}
+function goCar(id){window.location.href='car-details.html?id='+id;}
+function setView(v){
+  const g=document.getElementById('carsGrid');
+  if(v==='list'){g.classList.add('list-mode');document.getElementById('listVBtn').classList.add('active');document.getElementById('gridVBtn').classList.remove('active');}
+  else{g.classList.remove('list-mode');document.getElementById('gridVBtn').classList.add('active');document.getElementById('listVBtn').classList.remove('active');}
+}
+let selectedCategory = "all";
+
+function setCategory(cat,btn){
+
+    selectedCategory = cat;
+
+    document.querySelectorAll('.ftab')
+        .forEach(b=>b.classList.remove('active'));
+
+    btn.classList.add('active');
+
+    filterCars();
+}
+function filterCars() {
+    const q = (document.getElementById('carSearch')?.value || '').toLowerCase();
+    const brands = [];
+    if(document.getElementById('fb-bmw')?.checked) brands.push('bmw');
+if(document.getElementById('fb-tesla')?.checked) brands.push('tesla');
+if(document.getElementById('fb-merc')?.checked) brands.push('mercedes-benz');
+if(document.getElementById('fb-audi')?.checked) brands.push('audi');
+if(document.getElementById('fb-toyota')?.checked) brands.push('toyota');
+if(document.getElementById('fb-porsche')?.checked) brands.push('porsche');
+    console.log("Selected Brands =", JSON.stringify(brands));
+
+    const fuels = [];
+if(document.getElementById('ff-petrol')?.checked) fuels.push('petrol');
+if(document.getElementById('ff-electric')?.checked) fuels.push('electric');
+if(document.getElementById('ff-hybrid')?.checked) fuels.push('hybrid');
+if(document.getElementById('ff-diesel')?.checked) fuels.push('diesel');
+    const cards = document.querySelectorAll('#carsGrid .car-card');
+    let visible = 0;
+    cards.forEach(card => {
+        const name =
+            card.querySelector('.cc-name')?.textContent.toLowerCase() || '';
+        const brand =
+            card.querySelector('.cc-brand')?.textContent.toLowerCase().trim() || '';
+        const fuel =
+            card.querySelector('.cc-fuel')?.textContent.toLowerCase().trim() || '';
+        console.log("Card Brand =", brand);
+        const searchMatch =
+            q === '' ||
+            name.includes(q) ||
+            brand.includes(q);
+        const brandMatch =
+            brands.length === 0 ||
+            brands.includes(brand);
+        const fuelMatch =
+            fuels.length === 0 ||
+            fuels.includes(fuel);
+
+            const selectedPrice =
+    parseInt(document.getElementById("priceRange").value);
+
+const priceText =
+    card.querySelector(".cc-num").textContent;
+
+const carPrice =
+    parseInt(
+        priceText.replace("₹", "").replace(",", "")
+    );
+
+const priceMatch =
+    carPrice <= selectedPrice;
+
+    const selectedRating =
+    document.querySelector('input[name="rat"]:checked');
+
+let minRating = 0;
+
+if (selectedRating.id === "r5") minRating = 5;
+if (selectedRating.id === "r4") minRating = 4;
+if (selectedRating.id === "r3") minRating = 3;
+
+const cardRating =
+    parseFloat(card.dataset.rating);
+
+const ratingMatch =
+    cardRating >= minRating;
+
+    const categories =
+    card.dataset.category || "";
+
+const categoryMatch =
+    selectedCategory === "all" ||
+    categories.includes(selectedCategory);
+
+
+        const show = searchMatch && brandMatch && fuelMatch && priceMatch && ratingMatch && categoryMatch;
+        card.style.display = show ? '' : 'none';
+        if(show) visible++;
+    
+    });
+
+const sortType =
+    document.getElementById("sortSel").value;
+
+console.log("Sort Type =", sortType);
+const grid =
+    document.getElementById("carsGrid");
+console.log("All cards:", cards.length);
+const sortedCards =
+    [...document.querySelectorAll("#carsGrid .car-card")];
+
+console.log("Cards found =", sortedCards.length);
+
+if (sortType === "price-asc") {
+
+    sortedCards.sort((a,b) => {
+
+        const priceA = parseInt(
+            a.querySelector(".cc-num").textContent.replace("$","")
+        );
+
+        const priceB = parseInt(
+            b.querySelector(".cc-num").textContent.replace("$","")
+        );
+
+        return priceA - priceB;
+    });
+}
+
+if (sortType === "price-desc") {
+    console.log("Sorting started");
+
+    sortedCards.sort((a,b) => {
+
+        const priceA = parseInt(
+            a.querySelector(".cc-num").textContent.replace("$","")
+        );
+
+        const priceB = parseInt(
+            b.querySelector(".cc-num").textContent.replace("$","")
+        );
+
+        return priceB - priceA;
+    });
+}
+if (sortType === "rating") {
+
+    sortedCards.sort((a,b) => {
+
+        const ratingA =
+            parseFloat(a.dataset.rating);
+
+        const ratingB =
+            parseFloat(b.dataset.rating);
+
+        return ratingB - ratingA;
+    });
+
+}
+console.log(sortedCards.length);
+sortedCards.forEach(card => {
+    grid.appendChild(card);
+});
+
+document.getElementById('resultCount').textContent = visible;
+toast("Filters applied successfully");
+}
+
+function loadFavorites(){
+
+    const favs =
+        JSON.parse(localStorage.getItem("favorites")) || [];
+
+    document.querySelectorAll(".car-card")
+        .forEach(card => {
+
+            const id = card.dataset.id;
+
+            const favBtn =
+                card.querySelector(".cc-fav");
+
+           if(favs.includes(id) && favBtn){
+    favBtn.classList.add("active");
+
+                favBtn.innerHTML =
+                    '<i class="fas fa-heart"></i>';
+            }
+        });
+}
+
+function closeFilters() {
+    const overlay = document.getElementById('drawerOverlay');
+    if (overlay) {
+        overlay.classList.remove('open');
+    }
+}
+document.getElementById("applyBtn").addEventListener("click", function () {
+    console.log("Apply clicked");
+    filterCars();
+});
+// Mobile filter drawer
+document.getElementById('mobileFilterBtn')?.addEventListener('click',()=>document.getElementById('drawerOverlay').classList.add('open'));
+document.getElementById('drawerOverlay')?.addEventListener('click',e=>{if(e.target===document.getElementById('drawerOverlay'))document.getElementById('drawerOverlay').classList.remove('open');});
+loadUser();
+async function bookCar(carId) {
+
+    const booking = {
+        userId: 1,
+        carId: carId,
+        pickupDate: "2026-06-15",
+        returnDate: "2026-06-20",
+        bookingStatus: "Booked",
+        bookedOn: new Date().toISOString()
+    };
+
+    console.log("Sending booking:", booking);
+
+    try {
+        const response = await fetch("http://localhost:8080/api/bookings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(booking)
+        });
+
+        console.log("Response status:", response.status);
+
+        const text = await response.text();
+        console.log("Response body:", text);
+
+        if(response.ok){
+            alert("Booking saved to database!");
+            window.location.href = "my-bookings.html";
+        } else {
+            alert("Booking failed!");
+        }
+
+    } catch(err) {
+        console.error("ERROR:", err);
+    }
+}
+async function loadCarsFromDB() {
+    try {
+
+        const response = await fetch("http://localhost:8080/api/cars");
+
+        console.log("Response =", response);
+
+        const cars = await response.json();
+
+console.log("Cars Count =", cars.length);
+console.log(cars);
+
+        console.log("Cars =", cars);
+
+        const carsGrid = document.getElementById("carsGrid");
+
+        carsGrid.innerHTML = "";
+
+        cars.forEach(car => {
+
+    carsGrid.innerHTML += `
+    <div class="car-card"
+     data-id="${car.id}"
+     data-rating="${car.rating || 4.5}"
+     data-category="sedan"
+     onclick="goCar(${car.id})">
+
+        <div class="cc-img">
+            <img src="${car.imageUrl}" alt="${car.brand}">
+            <div class="cc-fuel">${car.fuelType}</div>
+
+            <div class="cc-fav"
+     onclick="event.stopPropagation(); toggleFav(this)">
+    <i class="far fa-heart"></i>
+</div>
+        </div>
+
+        <div class="cc-body">
+            <div class="cc-brand">${car.brand}</div>
+            <div class="cc-name">${car.model}</div>
+
+            <div class="cc-specs">
+                <div class="spec-pill">
+                    <strong>${car.seats}</strong>
+                    <span>Seats</span>
+                </div>
+
+                <div class="spec-pill">
+                    <strong>${car.transmission}</strong>
+                    <span>Trans</span>
+                </div>
+            </div>
+
+            <div class="cc-footer">
+                <div class="cc-num">
+                    ₹${car.pricePerDay}
+                </div>
+
+                <button class="btn-book"
+                    onclick="event.stopPropagation(); bookCar(${car.id})">
+                    Book
+                </button>
+            </div>
+        </div>
+    </div>
+    `;
+});
+console.log("Cars loaded:", cars.length);
+console.log("Grid HTML:", carsGrid.innerHTML);
+loadFavorites();
+    } 
+    catch(error) {
+        console.error("ERROR =", error);
+    }
+}
+
+loadUser();
+loadCarsFromDB();
+</script>
+</body>
+</html>
