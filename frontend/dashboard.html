@@ -307,6 +307,11 @@ function loadUser(){
   document.getElementById('profileEmail').textContent = u.email||'—';
   document.getElementById('profileCity').textContent = u.city||'—';
   ['sidebarAvatar','topBarAvatar','profileAvatar'].forEach(id=>document.getElementById(id).textContent=initial);
+
+  const isAdmin = u.email === 'admin@rentalcar.ai';
+  document.querySelectorAll('a[href="admin.html"]').forEach(el => {
+    el.style.setProperty('display', isAdmin ? '' : 'none', 'important');
+  });
 }
 
 function loadStats(){

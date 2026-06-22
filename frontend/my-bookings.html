@@ -1123,6 +1123,11 @@
       const init = first[0].toUpperCase();
       document.getElementById('sbName').textContent = u.name || 'Driver';
       ['sbAvatar', 'topAvatar'].forEach(id => document.getElementById(id).textContent = init);
+
+      const isAdmin = u.email === 'admin@rentalcar.ai';
+      document.querySelectorAll('a[href="admin.html"]').forEach(el => {
+        el.style.setProperty('display', isAdmin ? '' : 'none', 'important');
+      });
     }
 
     const CAR_NAMES = {

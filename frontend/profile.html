@@ -578,6 +578,11 @@ function loadProfile() {
   const user = getUserData();
   if (!user) return;
 
+  const isAdmin = user.email === 'admin@rentalcar.ai';
+  document.querySelectorAll('a[href="admin.html"]').forEach(el => {
+    el.style.setProperty('display', isAdmin ? '' : 'none', 'important');
+  });
+
   // Avatar initial = first letter of the user's name
   const initial = (user.name || "U").trim().charAt(0).toUpperCase();
   document.getElementById("avatarCircle").textContent = initial;

@@ -1008,6 +1008,13 @@
 
   <!-- BUSINESS INTELLIGENCE SCRIPT -->
   <script>
+    (function() {
+      const u = JSON.parse(localStorage.getItem('rcai_user') || '{}');
+      if (u.email !== 'admin@rentalcar.ai') {
+        alert('Access denied: Admin privileges required.');
+        window.location.href = 'dashboard.html';
+      }
+    })();
     const BACKEND_URL = "https://rentalcarai.onrender.com/api";
 
     // Fallback data in case the Spring Boot API is offline

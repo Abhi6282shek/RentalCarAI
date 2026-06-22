@@ -397,6 +397,11 @@ body {
         const el = document.getElementById(id);
         if (el) el.textContent = init;
       });
+
+      const isAdmin = u.email === 'admin@rentalcar.ai';
+      document.querySelectorAll('a[href="admin.html"]').forEach(el => {
+        el.style.setProperty('display', isAdmin ? '' : 'none', 'important');
+      });
     }
 
     function logout() {

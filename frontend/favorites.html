@@ -216,6 +216,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
     <a class="sb-link" href="contact.html"><i class="fas fa-envelope"></i>Contact Us</a>
     <div class="sb-section">Account</div>
     <a class="sb-link" href="profile.html"><i class="fas fa-user-circle"></i>Profile</a>
+    <a class="sb-link" href="admin.html"><i class="fas fa-user-shield"></i>Admin Panel</a>
     <a class="sb-link" href="#"><i class="fas fa-cog"></i>Settings</a>
   </div>
   <div class="sb-bottom">
@@ -350,6 +351,11 @@ function loadUser(){
   const init = (u.name||'D')[0].toUpperCase();
   if(document.getElementById('sbName')) document.getElementById('sbName').textContent = u.name||'Driver';
   ['sbAvatar','topAvatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=init;});
+
+  const isAdmin = u.email === 'admin@rentalcar.ai';
+  document.querySelectorAll('a[href="admin.html"]').forEach(el => {
+    el.style.setProperty('display', isAdmin ? '' : 'none', 'important');
+  });
 }
 
 function toast(msg, col='#22c55e'){
