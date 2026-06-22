@@ -612,13 +612,13 @@ async function bookCar(carId) {
     console.log("Sending booking:", booking);
 
     try {
-        const response = await fetch("http://localhost:8080/api/bookings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(booking)
-        });
+        const response = await fetch("https://rentalcarai.onrender.com/api/bookings", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(booking)
+});
 
         console.log("Response status:", response.status);
 
@@ -639,7 +639,7 @@ async function bookCar(carId) {
 async function loadCarsFromDB() {
     try {
 
-        const response = await fetch("http://localhost:8080/api/cars");
+        const response = await fetch("https://rentalcarai.onrender.com/api/cars");
 
         console.log("Response =", response);
 

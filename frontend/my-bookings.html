@@ -1161,7 +1161,7 @@
       const userId = user.id;
 
       // Fetch all cars from DB to get the correct details dynamically
-      fetch("http://localhost:8080/api/cars")
+      fetch("https://rentalcarai.onrender.com/api/cars")
         .then(res => res.json())
         .then(carsData => {
           const dbCarNames = {};
@@ -1174,7 +1174,7 @@
           });
 
           // Fetch bookings for user
-          return fetch(`http://localhost:8080/api/bookings/user/${userId}`)
+          return fetch(`https://rentalcarai.onrender.com/api/bookings/cancel/${id}`)
             .then(res => {
               console.log("Response status:", res.status);
               return res.json();
@@ -1216,7 +1216,7 @@
 
     function cancelBooking(id) {
 
-      fetch(`http://localhost:8080/api/bookings/cancel/${id}`, {
+      fetch(`https://rentalcarai.onrender.com/api/bookings/cancel/${id}`, {
         method: "PUT"
       })
         .then(res => res.json())
