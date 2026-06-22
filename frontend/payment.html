@@ -992,7 +992,7 @@ body {
       let bookingId = Math.floor(100000 + Math.random() * 900000); // simulated random booking ID
 
       try {
-        const response = await fetch(`${BACKEND_URL}/bookings/create`, {
+        const response = await fetch(`${BACKEND_URL}/bookings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(bookingData)

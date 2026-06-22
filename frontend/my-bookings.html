@@ -1174,7 +1174,7 @@
           });
 
           // Fetch bookings for user
-          return fetch(`https://rentalcarai.onrender.com/api/bookings/cancel/${id}`)
+          return fetch(`https://rentalcarai.onrender.com/api/bookings/user/${userId}`)
             .then(res => {
               console.log("Response status:", res.status);
               return res.json();
